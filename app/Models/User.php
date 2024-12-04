@@ -45,4 +45,21 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+
+    public function adminlte_profile_url()
+    {
+        // Aquí debes devolver la URL del perfil del usuario
+        // Puede ser algo como esto:
+        return asset('vendor/adminlte/dist/img/profile-user.png');
+    }
+
+
+    public function adminlte_image()
+    {
+        // Aquí debes devolver la URL del perfil del usuario
+        // Puede ser algo como esto:
+        return asset('vendor/adminlte/dist/img/profile-user.png');
+    }
+
 }

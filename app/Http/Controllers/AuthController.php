@@ -18,15 +18,24 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // Validación
+        // Validación de los datos de entrada
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:3',
+        ]);
+    
+        // Intentar autenticar al usuario
         $credentials = $request->only('email', 'password');
-         
+    
         if (Auth::attempt($credentials)) {
+            // Si el login es exitoso, redirige al usuario a la página deseada
             return redirect()->intended('/home');
         }
-
-        return redirect()->back()->withErrors(['error' => 'registros incorrectos !!!']);
+    
+        // Si las credenciales son incorrectas, redirige con un mensaje de error
+        return redirect()->back()->withErrors(['error' => 'Registros incorrectos.']);
     }
+    
 
     public function olvide_password()
     {
@@ -95,6 +104,6 @@ class AuthController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('login');
+        return redirect()->route('index');
     }
 }
