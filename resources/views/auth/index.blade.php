@@ -8,9 +8,11 @@
     <link rel="icon" href="{{ asset('vendor/adminlte/dist/img/mapterralogo.webp') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
     <link rel="stylesheet" href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/adminlte/plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
-    <script src="{{ asset('vendor/bootstrap/js/bootstrap.js') }}"></script>
+     <script src="{{ asset('vendor/bootstrap/js/bootstrap.js') }}"></script>
+     <script src="{{ asset('vendor/adminlte/dist/js/adminlte.js') }}"></script>
+
 </head>
+
 
 <body class="d-flex justify-content-center align-items-center bg-dark" 
       style="height: 100vh; margin: 0; 
@@ -89,7 +91,7 @@
             </p>
         </div>
     </div>
-
+   
 </body>
 
 </html>

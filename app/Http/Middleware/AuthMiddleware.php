@@ -16,7 +16,6 @@ class AuthMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        dd('Middleware auth.mapterra ejecutado.');
         if (!Auth::check()) {
             return redirect()->route('index');
         }

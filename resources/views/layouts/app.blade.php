@@ -4,11 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{{ asset('vendor/adminlte/dist/img/mapterralogo.webp ') }}" type="image/x-icon">
+
     <title>@yield('title', 'Mapterra')</title>
 
-    <!-- AdminLTE CSS -->
-    <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/adminlte/plugins/fontawesome-free/css/all.min.css') }}">
+      <!-- Estilos de AdminLTE -->
+      <link rel="stylesheet" href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}"> 
+      <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
+      <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/OverlayScrollbars.min.css') }}">
+
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
     
     <!-- Otros estilos personalizados -->
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
@@ -18,8 +23,8 @@
         <!-- Barra de navegación superior -->
         @include('layouts.partials.navbar')
 
-        <!-- Barra lateral (sidebar) -->
-        @include('layouts.partials.sidebar')
+        <!-- Barra lateral (sidebar) --> 
+        @yield('sidebar')
 
         <!-- Contenido principal -->
         <div class="content-wrapper">
@@ -38,13 +43,20 @@
         </div>
 
         <!-- Pie de página -->
-        @include('layouts.partials.footer')
+        @yield('footer')
     </div>
-
-    <!-- Scripts de AdminLTE -->
-    <script src="{{ asset('vendor/adminlte/plugins/jquery/jquery.min.js') }}"></script>
+ 
+    <!-- Scripts -->
+    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
+    <script src="{{ asset('vendor/adminlte/dist/js/jquery.overlayScrollbars.min.js') }}"></script>
+
+  <script >
+    // PRELOADER  D
+    
+  </script>
+
 
     <!-- Otros scripts personalizados -->
     @yield('scripts')

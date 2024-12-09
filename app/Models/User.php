@@ -4,6 +4,8 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -20,7 +22,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'foto_path',
         'password',
+        'rol_id'
     ];
 
     /**
@@ -61,5 +65,12 @@ class User extends Authenticatable
         // Puede ser algo como esto:
         return asset('vendor/adminlte/dist/img/profile-user.png');
     }
-
+   
+    public function rol(): BelongsTo
+    {
+        return $this->belongsTo(Rol::class, 'rol_id', 'id');
+    }
+    public function empresas(): HasMany {
+        return $this->hasMany(Empresa::class, "user_id", "id");  
+    }
 }

@@ -152,11 +152,11 @@ return [
     |
     */
 
-    'layout_topnav' => null,
-    'layout_boxed' => null,
+    'layout_topnav' => false,
+    'layout_boxed' => false,
     'layout_fixed_sidebar' => true,
     'layout_fixed_navbar' => true,
-    'layout_fixed_footer' => false,
+    'layout_fixed_footer' => true,
     'layout_dark_mode' => true,
 
     /*
@@ -318,99 +318,8 @@ return [
             'topnav_right' => true,
         ],
         
-        // Sidebar items:
-        [
-            'text' => 'AGRICULTURA',
-            'icon' => 'fas fa-tractor', // Icono para el encabezado
-            'icon_color' => 'green', // Azul
-
-            
-            'submenu' => [
-                [
-                    'text' => 'Cartografía',
-                    'url' => 'admin/pages/cartografia',
-                    'icon' => 'fas fa-map-marked-alt', // Icono para cartografía
-                    'icon_color' => 'primary', // Azul
-                ],
-                [
-                    'text' => 'Históricos',
-                    'url' => 'admin/pages/historicos',
-                    'icon' => 'fas fa-history', // Icono para históricos
-                    'icon_color' => 'info', // Azul claro
-                ],
-                [
-                    'text' => 'Análisis Predio',
-                    'url' => 'admin/pages/analisis-predio',
-                    'icon' => 'fas fa-chart-bar', // Icono para análisis de predio
-                    'icon_color' => 'warning', // Amarillo
-                ],
-                [
-                    'text' => 'Análisis Cultivo',
-                    'url' => 'admin/pages/analisis-cultivo',
-                    'icon' => 'fas fa-seedling', // Icono para análisis de cultivo
-                    'icon_color' => 'success', // Verde
-                ],
-                [
-                    'text' => 'Monitoreo',
-                    'url' => 'admin/pages/monitoreo',
-                    'icon' => 'fas fa-eye', // Icono para monitoreo
-                    'icon_color' => 'danger', // Rojo
-                ],
-            ],
-            
-        ],
-        [
-
-         'text' => 'GANADERIA',
-         'icon' => 'fas fa-horse-head', // Icono para el encabezado
-         'icon_color' => 'yellow', // Azul
-         'submenu' => [
-                [
-                    'text' => 'Potreros',
-                    'url' => 'admin/pages/potreros', // URL para potreros
-                    'icon' => 'fas fa-tree', // Icono para potreros (bosques/pastos)
-                    'icon_color' => 'success', // Verde
-                ],
-                [
-                    'text' => 'Tropas',
-                    'url' => 'admin/pages/tropas', // URL para tropas
-                    'icon' => 'fas fa-paw', // Icono para tropas (grupo de animales) //BUSCAR ICONO ADEACUADO
-                    'icon_color' => 'primary', // Azul
-                ],
-                [
-                    'text' => 'Hato ganadero',
-                    'url' => 'admin/pages/hato-ganadero', // URL para hato ganadero
-                    'icon' => 'fas fa-paw', // Icono para ganado (huellas de animales)
-                    'icon_color' => 'warning', // Amarillo
-                ],
-                [
-                    'text' => 'Rotación',
-                    'url' => 'admin/pages/rotacion', // URL para rotación
-                    'icon' => 'fas fa-sync-alt', // Icono para rotación (ciclo de pastoreo)
-                    'icon_color' => 'info', // Azul claro
-                ],
-                [
-                    'text' => 'Stock forrajero',
-                    'url' => 'admin/pages/stock-forrajero', // URL para stock forrajero
-                    'icon' => 'fas fa-leaf', // Icono para forraje (hojas/verdes)
-                    'icon_color' => 'success', // Verde
-                ],
-                [
-                    'text' => 'Ubicación',
-                    'url' => 'admin/pages/ubicacion-ganado', // URL para ubicación del ganado
-                    'icon' => 'fas fa-map-marker-alt', // Icono para ubicación (mapa)
-                    'icon_color' => 'danger', // Rojo
-                ],
-            ]
-
-        ] ,
         
-    [
-        'text' => 'Mi nueva opción',
-        'url'  => 'ruta/a/tu/opcion',
-        'icon' => 'fas fa-cogs',
-        'class' => 'sidebar-footer', // Asegura que esté al final
-    ],
+    
 ],
 
 
