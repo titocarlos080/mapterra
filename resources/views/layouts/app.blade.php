@@ -1,4 +1,3 @@
-<!-- resources/views/layouts/admin.blade.php -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,8 +16,33 @@
     
     <!-- Otros estilos personalizados -->
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+
+    <!-- Estilos para el preloader -->
+    <style>
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #preloader.hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
+    <div id="preloader">
+        <div class="spinner-border text-primary" role="status">
+            <span class="sr-only">Cargando...</span>
+        </div>
+    </div>
+
     <div class="wrapper">
         <!-- Barra de navegación superior -->
         @include('layouts.partials.navbar')
@@ -52,11 +76,21 @@
     <script src="{{ asset('vendor/adminlte/dist/js/adminlte.min.js') }}"></script>
     <script src="{{ asset('vendor/adminlte/dist/js/jquery.overlayScrollbars.min.js') }}"></script>
 
-  <script >
-    // PRELOADER  D
-    
-  </script>
+    <script>
+        // Preloader
+        window.addEventListener('load', function () {
+            const preloader = document.getElementById('preloader');
+            if (preloader) {
+                preloader.classList.add('hidden');
+            }
+        });
 
+        setTimeout(function() {
+            // Cierra el mensaje después de 5 segundos
+            $('.alert').alert('close');
+        }, 3000); // 5000 milisegundos = 5 segundos
+
+    </script>
 
     <!-- Otros scripts personalizados -->
     @yield('scripts')

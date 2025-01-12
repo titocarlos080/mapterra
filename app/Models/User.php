@@ -24,7 +24,8 @@ class User extends Authenticatable
         'email',
         'foto_path',
         'password',
-        'rol_id'
+        'rol_id',
+        'empresa_id'
     ];
 
     /**
@@ -70,7 +71,7 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Rol::class, 'rol_id', 'id');
     }
-    public function empresas(): HasMany {
-        return $this->hasMany(Empresa::class, "user_id", "id");  
+    public function empresa(): BelongsTo {
+        return $this->belongsTo(Empresa::class, "empresa_id", "id");  
     }
 }

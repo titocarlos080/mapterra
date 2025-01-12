@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Respuesta;
+use App\Models\Permiso;
+use App\Models\Rol;
 use Illuminate\Http\Request;
 
-class RespuestaController extends Controller
+class PermisoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -13,6 +14,8 @@ class RespuestaController extends Controller
     public function index()
     {
         //
+        $permisos= Permiso::paginate(1);
+        return view('empresa.permisos',compact('permisos'));
     }
 
     /**
@@ -34,7 +37,7 @@ class RespuestaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Respuesta $respuesta)
+    public function show(Rol $rol)
     {
         //
     }
@@ -42,7 +45,7 @@ class RespuestaController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Respuesta $respuesta)
+    public function edit(Rol $rol)
     {
         //
     }
@@ -50,7 +53,7 @@ class RespuestaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Respuesta $respuesta)
+    public function update(Request $request, Rol $rol)
     {
         //
     }
@@ -58,7 +61,7 @@ class RespuestaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Respuesta $respuesta)
+    public function destroy(Rol $rol)
     {
         //
     }

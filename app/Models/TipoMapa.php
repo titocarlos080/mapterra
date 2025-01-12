@@ -11,7 +11,7 @@ class TipoMapa extends Model
     
     use HasFactory;
     protected $table = "tipo_mapas";
-    protected $fillable = ['nombre','descripcion'];
+    protected $fillable = ['nombre','descripcion','icon'];
     public function mapas(): HasMany {
         return $this->hasMany(Mapa::class, "tipomapa_id", "id");  // 'rol_id' es la columna en la tabla users que guarda el ID del rol
     }

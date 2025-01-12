@@ -1,13 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.app') 
+@section('title', 'Predios - ' . $empresa->nombre)
 
-<!-- Agrega el ícono en la pestaña -->
-<link rel="icon" href="{{ asset('vendor/adminlte/dist/img/mapterralogo.webp') }}" type="image/x-icon">
-
-@section('title', $predio->nombre . ' -Cartografia')
-
-@section('content_header')
-    <h1>{{ $predio->nombre }}</h1>
-@stop
 @section('sidebar')
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
@@ -19,17 +12,40 @@
         <span class="brand-text font-weight-light"><b>Mapterra</b>GO</span>
     </a>
 
-
-  
     <!-- Sidebar Menu -->
- @include('empresa.predios.sidebar')
- <!-- /.sidebar -->
- 
+    <div class="sidebar">
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                 <!-- Predios -->
+                <li class="nav-item">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-map-marker-alt" style="color: green;"></i> <!-- Icono representativo para "Predios" -->
+                        <p>
+                            Predios
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
 
+                    {{-- // FOR PARA LISTAR Predios --}}
+                    <ul class="nav nav-treeview">
+                        @foreach($empresa->predios as $predio)
+
+                        <li class="nav-item">
+                            <a href= "{{ route('admin-mapas-predio', [$predio->empresa_id,$predio->id]) }}" class="nav-link">
+                                <i class="fas fa-map-pin nav-icon" style="color: green;"></i> <!-- Icono representativo para "Predio 1" -->
+                                <p>{{$predio->nombre}}</p>
+                            </a>
+                        </li>
+                        @endforeach
+                    </ul>
+                </li>
+
+            </ul>
+        </nav>
+    </div>
+    <!-- /.sidebar -->
 </aside>
 @endsection
-
- 
 
 @section('content')
     @if(session('success'))
@@ -40,11 +56,19 @@
         </button>
     </div>
     @endif
-
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error!</strong> {{ session('error') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    @endif
+ 
     <div class="card">
         <div class="card-header d-flex justify-content-between">
             <div>
-                <h1 class="card-title">Cartografía: {{ $predio->nombre }}</h1>
+                <h3 class="card-title">Predios de: {{ $empresa->nombre }}</h3>
             </div>
             <div class="btn btn-warning ml-auto"  data-toggle="modal" data-target="#agregarPredioModal">
                 <i class="fas fa-plus-circle text-success"></i> Agregar
@@ -72,18 +96,21 @@
                             <td>{{ $predio->departamento }}</td>
                             <td>
                                 <!-- Botones de acciones -->
-                                <a href="{{ route('empresa.predio.show', [$predio->empresa_id,$predio->id]) }}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Ver">
+                                <a href="{{ route('admin-mapas-predio', [$predio->empresa_id,$predio->id]) }}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Ver">
                                     <i class="fas fa-eye"></i>  
                                 </a>
                                 
-                                <a href="{{ route('empresa.predio.edit',  [$predio->empresa_id,$predio->id]) }}" class="btn btn-warning btn-sm" data-toggle="tooltip" title="Editar">
-                                    <i class="fas fa-edit"></i>  
+                                <a href="#" onclick="openEditModal({{ $predio->empresa_id }}, {{ $predio->id }}, '{{ addslashes($predio->nombre) }}', '{{ addslashes($predio->municipio) }}', '{{ addslashes($predio->provincia) }}', '{{ addslashes($predio->departamento) }}')" class="btn btn-warning btn-sm" data-toggle="tooltip" title="Editar">
+                                    <i class="fas fa-edit"></i>
                                 </a>
                                 
+                                <meta name="csrf-token" content="{{ csrf_token() }}">
+
+                                
                                 <!-- Formulario para eliminar predio -->
-                                <form action="{{ route('empresa.predio.destroy',[$predio->empresa_id,$predio->id]) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('¿Estás seguro de eliminar este predio?');">
+                                <form action="{{ route('admin-predios-delete',[$predio->empresa_id,$predio->id]) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('¿Estás seguro de eliminar este predio?');">
                                     @csrf
-                                    @method('DELETE')
+                                    @method('POST')
                                     <button type="submit" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Eliminar">
                                         <i class="fas fa-trash-alt"></i>  
                                     </button>
@@ -96,15 +123,14 @@
                 </table>
             </div>
             
-            {{-- <!-- Paginación -->
+            <!-- Paginación -->
             <div class="mt-3">
                 {{ $predios->links() }}
-            </div> --}}
-
-
+            </div>
         </div>
     </div>
 
+    
     <!-- Modal para agregar un predio -->
     <div class="modal fade" id="agregarPredioModal" tabindex="-1" role="dialog" aria-labelledby="agregarPredioModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -115,9 +141,12 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="form_predio" action="{{ route('empresa.predios.store', $empresa->id) }}" method="POST" enctype="multipart/form-data">
+                <form id="form_predio" action="{{ route('admin-predios-store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
+                        
+                            <input type="number" class="form-control" id="empresaId" name="empresaId" value="{{$empresa->id}}" hidden>
+                   
                         <!-- Nombre del Predio -->
                         <div class="form-group">
                             <label for="nombre">Nombre</label>
@@ -144,10 +173,10 @@
                 
                         <!-- Archivo KMZ -->
                         <div class="form-group">
-                            <label for="archivo_kmz">Archivo KMZ</label>
+                            <label for="archivo_kmz">Archivo JSON</label>
                             <div class="border p-3 text-center" id="drop-area" style="cursor: pointer; position: relative;">
                                 <p>Arrastra y suelta un archivo o haz clic para seleccionar un archivo</p>
-                         <input type="file" class="form-control-file" id="archivo_kmz" name="archivo_kmz" accept=".kmz" style="display: none;" onchange="handleFileSelect(event)">
+                         <input type="file" class="form-control-file" id="archivo_kmz" name="archivo_kmz" accept=".json" style="display: none;" onchange="handleFileSelect(event)">
                                 <div id="img-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none;">
                                     <img id="preview" src="#" alt="Vista previa" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6;">
                                 </div>
@@ -254,9 +283,66 @@
     </div>
 
     <script>
-        setTimeout(function() {
-            // Cierra el mensaje después de 5 segundos
-            $('.alert').alert('close');
-        }, 5000); // 5000 milisegundos = 5 segundos
+  function openEditModal(empresaId, predioId, nombre,mun, prov, dpto) {
+    // Elimina el modal anterior si existe
+    const existingModal = document.getElementById('editPredioModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Crea el HTML del modal dinámicamente
+    const modalHTML = `
+    <div class="modal fade" id="editPredioModal" tabindex="-1" role="dialog" aria-labelledby="editPredioModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editPredioModalLabel">Editar Predio</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form action="/admin/predios/update" method="POST">
+            <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').getAttribute('content')}">
+
+            <input type="hidden" name="empresa_id" value="${empresaId}">
+            <input type="hidden" name="predio_id" value="${predioId}">
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="editNombre">Nombre del Predio</label>
+                <input type="text" class="form-control" id="editNombre" name="nombre" value="${nombre}" required>
+              </div>
+              
+            
+              <div class="form-group">
+                <label for="editMunicipio">Municipio</label>
+                <input type="text" class="form-control" id="editMunicipio" name="municipio" value="${mun}" required>
+              </div>
+              <div class="form-group">
+                <label for="editProvincia">Provincia</label>
+                <input type="text" class="form-control" id="editProvincia" name="provincia" value="${prov}" required>
+              </div>
+              <div class="form-group">
+                <label for="editDepartamento">Departamento</label>
+                <input type="text" class="form-control" id="editDepartamento" name="departamento" value="${dpto}" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>`;
+
+    // Agrega el modal al body
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    // Muestra el modal
+    $('#editPredioModal').modal('show');
+}
+
+
+       
     </script>
 @stop

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Event; // Use the Event facade
 use JeroenNoten\LaravelAdminLte\Events\BuildingMenu;
@@ -26,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        Paginator::useBootstrap();
         Event::listen(BuildingMenu::class, function (BuildingMenu $event): void {
             $user = auth()->user(); // Obtiene el usuario autenticado
             $rol = $user->rol_id;   // Accede al rol_id asociado al usuario

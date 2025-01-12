@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tipo_mapas', function (Blueprint $table) {
+        Schema::create('rol_permisos', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->string('descripcion');
+            $table->foreignId('permiso_id')->constrained('permisos');  // Se asegura de que se hace referencia a 'permisos'
+            $table->foreignId('rol_id')->constrained('roles');  // Se asegura de que se hace referencia a 'roles'
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tipo_mapas');
+        Schema::dropIfExists('rol_permisos');
     }
 };

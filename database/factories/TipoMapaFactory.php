@@ -19,8 +19,8 @@ class TipoMapaFactory extends Factory
         return [
             //
             "nombre"=>fake()->word(),
-            "descripcion"=>fake()->word()
-
+            "descripcion"=>fake()->word(),
+            "icon"=>fake()->word()
         ];
     }
 }

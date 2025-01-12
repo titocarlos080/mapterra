@@ -11,8 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
+        //    protected $fillable = ["descripcion","json","fecha","hora","empresa_id"];
+
         Schema::create('solicitudes_de_estudios', function (Blueprint $table) {
             $table->id();
+            $table->string('descripcion');
+            $table->text('json');
+            $table->string('fecha');
+            $table->string('hora');
+            $table->foreignId('estado_id')->constrained('estados'); 
+            $table->foreignId('empresa_id')->constrained('empresas'); // asociada a cada empresa
             $table->timestamps();
         });
     }

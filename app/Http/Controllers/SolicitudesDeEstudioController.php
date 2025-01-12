@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Empresa;
+use App\Models\Predio;
 use App\Models\SolicitudesDeEstudio;
+use Auth;
 use Illuminate\Http\Request;
 
 class SolicitudesDeEstudioController extends Controller
@@ -13,6 +16,9 @@ class SolicitudesDeEstudioController extends Controller
     public function index()
     {
         //
+        $trabajos = SolicitudesDeEstudio::where('estado_id','=',1)->get();
+        return view("empresa.solicitud-estudio",compact('trabajos'));
+
     }
 
     /**
@@ -23,12 +29,52 @@ class SolicitudesDeEstudioController extends Controller
         //
     }
 
+    public function clienteSolicitudEstudio()
+    {
+         
+        $empresa = Auth::user()->empresa;
+       
+        return view('clients.solicitud-estudio',  compact('empresa'));
+
+    }
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        //
+         
+        // Verifica los datos recibidos
+        $descripcion = $request->input('descripcion');
+        $json = $request->input('json');
+        $empresaId= $request->input('empresaId');
+
+        // Valida los datos
+        if (!$descripcion || !$json) {
+            return response()->json(['message' => 'Faltan datos'], 400);
+        }
+
+        try {
+            //code...
+            $solicitud = new SolicitudesDeEstudio();
+            $solicitud->descripcion = $descripcion;
+            $solicitud->json = $json;
+            $solicitud->fecha = now()->toDateString(); // Fecha actual sin hora (YYYY-MM-DD)
+            $solicitud->hora = now()->format('H:i:s'); // Hora actual Hms
+            $solicitud->estado_id = 1;
+            $solicitud->empresa_id=$empresaId;
+
+            $solicitud->save();
+
+           
+            return response()->json(['message' => 'Datos recibidos correctamente'], 200);
+
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
+
+
+
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Empresa;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 
@@ -41,14 +42,28 @@ class EmpresaController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
+    {            
+       
+
         try {
+            DB::beginTransaction();
+
+            // Crear el nuevo registro de empresa
+            $empresa = new Empresa();
+            $empresa->nombre = $request->nombre;
+            $empresa->direccion = $request->direccion;
+            $empresa->telefono = $request->telefono;
+            $empresa->ganaderia= $request->ganaderia?1:0;
+            $empresa->agricultura= $request->agricultura?1:0;
+            $empresa->save();
+
             // Crear el nuevo usuario
             $user = new User();
             $user->name = $request->nombre;
             $user->email = $request->email;
             $user->password = bcrypt($request->password); // Encriptar la contraseña
             $user->rol_id = 2; // Asignar el rol adecuado
+            $user->empresa_id = $empresa->id; // Asignar el rol adecuado
             $user->save();
   
             // Verificar si se ha subido una imagen
@@ -70,55 +85,95 @@ class EmpresaController extends Controller
                     $user->save(); // Guardar el registro con la nueva ruta
                 }
 
+                DB::commit(); // Confirmar la transacción
 
 
-            // Crear el nuevo registro de empresa
-            $empresa = new Empresa();
-            $empresa->nombre = $request->nombre;
-            $empresa->direccion = $request->direccion;
-            $empresa->telefono = $request->telefono;
-            $empresa->user_id = $user->id; // Relacionar el usuario con la empresa
-            $empresa->save();
-
-            return redirect()->route('admin.empresas')->with('success', 'La empresa se ha creado exitosamente.');
+            return  back()->with('success', 'La empresa se ha creado exitosamente.');
         } catch (\Throwable $th) {
+                     DB::rollBack(); // Revertir la transacción en caso de error
+
             // Manejo de excepciones en caso de error
-            return response()->json(['error' => 'Hubo un error al guardar los datos'.$th], 500);
+             return back()->with('error' , 'Hubo un error al guardar los datos'.$th);
         }
 
 
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Empresa $empresa)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Empresa $empresa)
-    {
-        //
-    }
+    
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Empresa $empresa)
-    {
-        //
+    public function update(Request $request)
+{
+    // Validación de los datos recibidos
+    $request->validate([
+        'nombre' => 'required|string|max:255',
+        'direccion' => 'required|string|max:255',
+        'telefono' => 'required|string|max:20',
+        'ganaderia' => 'nullable|boolean',
+        'agricultura' => 'nullable|boolean',
+    ], [
+        'nombre.required' => 'El nombre de la empresa es obligatorio.',
+        'telefono.required' => 'El teléfono es obligatorio.',
+    ]);
+
+    try {
+        // Buscar la empresa por su ID
+        $empresa = Empresa::findOrFail($request->id);
+
+        // Actualizar solo los campos que no están vacíos
+        if ($request->has('nombre')) {
+            $empresa->nombre = $request->nombre;
+        }
+        if ($request->has('direccion')) {
+            $empresa->direccion = $request->direccion;
+        }
+        if ($request->has('telefono')) {
+            $empresa->telefono = $request->telefono;
+        }
+        if ($request->has('ganaderia')) {
+            $empresa->ganaderia = $request->ganaderia ? 1 : 0;
+        }
+        if ($request->has('agricultura')) {
+            $empresa->agricultura = $request->agricultura ? 1 : 0;
+        }
+
+        // Guardar los cambios en la base de datos
+        $empresa->save();
+
+        // Redirigir al usuario con un mensaje de éxito
+        return redirect()->route('admin-empresas')->with('success', 'La empresa fue actualizada correctamente.');
+
+    } catch (\Throwable $th) {
+        // Capturar cualquier error y mostrar mensaje
+        return redirect()->back()->with('error', 'Ocurrió un error al intentar actualizar la empresa.');
     }
+}
+
+    
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Empresa $empresa)
-    {
-        //
+    public function delete($id)
+    {  
+        try {
+           
+            // Buscar la empresa por su ID
+            $empresa = Empresa::findOrFail($id);
+    
+            // Eliminar la empresa
+            $empresa->delete();
+    
+            // Redirigir con mensaje de éxito
+            return back()->with('success', 'La empresa fue eliminada correctamente.');
+        } catch (\Throwable $th) {
+            
+            // Capturar cualquier error y mostrar mensaje de error
+            return back()->with('error', 'Ocurrió un error al intentar eliminar la empresa:'.$th);
+        }
     }
+    
 }

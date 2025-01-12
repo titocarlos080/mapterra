@@ -15,8 +15,10 @@ class AuthMiddleware
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
-    {
-        if (!Auth::check()) {
+    { //si el rol es admin 
+        $user = Auth::user();
+        
+        if (!Auth::check() || !($user->rol_id==1)) {
             return redirect()->route('index');
         }
 

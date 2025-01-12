@@ -13,8 +13,13 @@ return new class extends Migration
     {
         Schema::create('mapas', function (Blueprint $table) {
             $table->id();
-            $table->string('path_file');
+            $table->string('titulo');
+            $table->string('path_file'); 
+            $table->string('fecha');
+            $table->string('hora');
             $table->string('descripcion');
+            $table->foreignId('tipomapa_id')->constrained('tipo_mapas');   
+            $table->foreignId('predio_id')->constrained('predios');   
 
             $table->timestamps();
         });

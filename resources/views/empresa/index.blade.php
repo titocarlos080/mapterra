@@ -31,12 +31,16 @@
 
                 {{-- //  FOR PARA LISTAR EMPRESA --}}
                 <ul class="nav nav-treeview">
+                    @foreach($empresas as $empresa)
+
                     <li class="nav-item">
-                        <a href="{{route('admin.empresas')}}" class="nav-link">
+                        <a href="{{ route('admin-predios-empresa', $empresa->id) }}"  class="nav-link">
                             <i class="fas fa-list nav-icon" style="color: green;"></i>
-                            <p>EMPRESA 1</p>
+                            <p>{{$empresa->nombre}}</p>
                         </a>
                     </li>
+                   
+                    @endforeach
                 </ul>
             </li>
         </ul>
@@ -54,18 +58,25 @@
 @section('content')
 @if(session('success'))
 <div class="alert alert-success alert-dismissible fade show" role="alert">
-    {{ session('success') }}
+    <strong>Éxito!</strong> {{ session('success') }}
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
 </div>
 @endif
 
-<div class="card ">
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>Error!</strong> {{ session('error') }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+@endif
 
+ 
 <div class="card-header d-flex justify-content-between">
    <div>
-    <h3 class="card-title">Nuestros Clientes</h3>
      </div> 
     <div class="btn btn-warning ml-auto"  data-toggle="modal" data-target="#agregarModal">
         <i class="fas fa-plus-circle text-success"></i> Agregar
@@ -87,40 +98,39 @@
             <tbody>
                 @foreach($empresas as $empresa)
                 <tr>
-                    <td>{{ $empresa->nombre }}</td>
-                    <td>{{ $empresa->direccion }}</td>
-                    <td>{{ $empresa->telefono }}</td>
-                    <td>    
-                        <!-- Botones de acciones -->
-                        <a href="{{ route('empresa.show', $empresa->id) }}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Ver">
-                            <i class="fas fa-eye"></i>  
-                        </a>
-                    
-                        <a href="{{ route('empresa.edit', $empresa->id) }}" class="btn btn-warning btn-sm" data-toggle="tooltip" title="Editar ">
-                            <i class="fas fa-edit"></i>  
-                        </a>
-                    
-                        <form action="{{ route('empresa.destroy', $empresa->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('¿Estás seguro de eliminar este Cliente?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Eliminar">
-                                <i class="fas fa-trash-alt"></i>  
-                            </button>
-                        </form>
-                        
-                    
-                        <!-- Botón para el ícono de Cartografía o Mapa -->
-                        <a href="{{ route('empresa.predios', ['nombre' => $empresa->nombre, 'id' => $empresa->id]) }}" 
-                            class="btn btn-success btn-sm" 
-                            data-toggle="tooltip" 
-                            title="Ver Predios">
-                            <i class="fas fa-map-marked-alt"></i>  
-                        </a>
-
-                    </td>
-                    
+                  <td>{{ $empresa->nombre }}</td>
+                  <td>{{ $empresa->direccion }}</td>
+                  <td>{{ $empresa->telefono }}</td>
+                  <td>    
+                    <!-- Botón para ver detalles -->
+                    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#verEmpresaModal" 
+                            onclick="setEmpresaDetails('{{ $empresa->nombre }}', '{{ $empresa->direccion }}', '{{ $empresa->telefono }}', '{{ $empresa->ganaderia }}', '{{ $empresa->agricultura }}')">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                
+                    <!-- Botón para editar empresa -->
+                    <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editarEmpresaModal" 
+                            onclick="setEditEmpresaDetails('{{ $empresa->id }}', '{{ $empresa->nombre }}', '{{ $empresa->direccion }}', '{{ $empresa->telefono }}', '{{ $empresa->ganaderia }}', '{{ $empresa->agricultura }}')">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                
+                    <!-- Eliminar empresa -->
+                    <form action="{{ route('admin-empresas-delete', $empresa->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('¿Estás seguro de eliminar esta empresa?');">
+                      @csrf
+                      @method('POST')
+                      <button type="submit" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash-alt"></i>
+                      </button>
+                    </form>
+                
+                    <!-- Botón para ver predios -->
+                    <a href="{{ route('admin-predios-empresa', $empresa->id) }}" class="btn btn-success btn-sm">
+                      <i class="fas fa-map-marked-alt"></i>
+                    </a>
+                  </td>
                 </tr>
                 @endforeach
+                
             </tbody>
         </table>
     </div>
@@ -131,17 +141,125 @@
     </div>
 </div>
 <!-- /.card-body -->
+
+
+
+<!-- Modal para ver detalles de la empresa -->
+    <div class="modal fade" id="verEmpresaModal" tabindex="-1" role="dialog" aria-labelledby="verEmpresaModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="verEmpresaModalLabel">Detalles de la Empresa</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            <p><strong>Nombre:</strong> <span id="modalNombre"></span></p>
+            <p><strong>Dirección:</strong> <span id="modalDireccion"></span></p>
+            <p><strong>Teléfono:</strong> <span id="modalTelefono"></span></p>
+            <p><strong>Ganadería:</strong> <span id="modalGanaderia"></span></p>
+            <p><strong>Agricultura:</strong> <span id="modalAgricultura"></span></p>
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+        </div>
+    </div>
+
+<!-- Modal para editar la empresa -->
+<div class="modal fade" id="editarEmpresaModal" tabindex="-1" role="dialog" aria-labelledby="editarEmpresaModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editarEmpresaModalLabel">Editar Empresa</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form method="POST" action="{{ route('admin-empresas-update') }}" id="editEmpresaForm">
+          @csrf
+          @method('POST')
+          <div class="modal-body">
+            <input type="hidden" id="editEmpresaId" name="id">
+            <div class="form-group">
+              <label for="editNombre">Nombre</label>
+              <input type="text" class="form-control" id="editNombre" name="nombre" required>
+            </div>
+            <div class="form-group">
+              <label for="editDireccion">Dirección</label>
+              <input type="text" class="form-control" id="editDireccion" name="direccion" required>
+            </div>
+            <div class="form-group">
+              <label for="editTelefono">Teléfono</label>
+              <input type="text" class="form-control" id="editTelefono" name="telefono" required>
+            </div>
+            <div class="form-group">
+              <label for="editGanaderia">Ganadería</label>
+              <select class="form-control" id="editGanaderia" name="ganaderia">
+                <option value="1">Activo</option>
+                <option value="0">No activo</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="editAgricultura">Agricultura</label>
+              <select class="form-control" id="editAgricultura" name="agricultura">
+                <option value="1">Activo</option>
+                <option value="0">No activo</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
 </div>
 
+
+
+
+
+
+
+
 <script>
-setTimeout(function() {
+  function setEmpresaDetails(nombre, direccion, telefono, ganaderia, agricultura) {
+    document.getElementById('modalNombre').innerText = nombre;
+    document.getElementById('modalDireccion').innerText = direccion;
+    document.getElementById('modalTelefono').innerText = telefono;
+    document.getElementById('modalGanaderia').innerText = ganaderia == 1 ? 'Activo' : 'No activo';
+    document.getElementById('modalAgricultura').innerText = agricultura == 1 ? 'Activo' : 'No activo';
+  }
+
+  function setEditEmpresaDetails(id, nombre, direccion, telefono, ganaderia, agricultura) {
+    document.getElementById('editEmpresaId').value = id;
+    document.getElementById('editNombre').value = nombre;
+    document.getElementById('editDireccion').value = direccion;
+    document.getElementById('editTelefono').value = telefono;
+    document.getElementById('editGanaderia').value = ganaderia;
+    document.getElementById('editAgricultura').value = agricultura;
+  }
+ 
+
+    setTimeout(function() {
     // Cierra el mensaje después de 5 segundos
     $('.alert').alert('close');
 }, 3000); // 5000 milisegundos = 5 segundos
 </script>
+<!-- Modal -->
+ 
+  
+  
 
-{{-- /////////////////////////////////// AGREGAR EMPRESA///// --}}
-<!-- Modal para agregar una empresa -->
+  {{-- /////////////////////////////////// AGREGAR EMPRESA///// --}}
+
+  <!-- Modal para agregar una empresa -->
 <div class="modal fade" id="agregarModal" tabindex="-1" role="dialog" aria-labelledby="agregarModalLabel" aria-hidden="true">
 <div class="modal-dialog" role="document">
 <div class="modal-content">
@@ -151,7 +269,7 @@ setTimeout(function() {
             <span aria-hidden="true">&times;</span>
         </button>
     </div>
-    <form action="{{route("admin.empresas.store")}}" method="POST" enctype="multipart/form-data">
+    <form action="{{route("admin-empresas-store")}}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="modal-body">
             <!-- Campo Nombre -->
@@ -171,7 +289,13 @@ setTimeout(function() {
                 <label for="telefono">Teléfono</label>
                 <input type="text" class="form-control" id="telefono" name="telefono" required>
             </div>
-    
+        <!-- Campo Teléfono -->
+        <div class="form-group">
+            <label for="agricultura">Agricultura</label>
+            <input type="checkbox"  id="agricultura" name="agricultura" required>
+            <label for="ganaderia">Ganaderia</label>
+            <input type="checkbox"  id="ganaderia" name="ganaderia" required>
+        </div>
             <!-- Campo Email -->
             <div class="form-group">
                 <label for="email">Email</label>

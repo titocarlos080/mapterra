@@ -17,7 +17,12 @@ class SolicitudesDeEstudioFactory extends Factory
     public function definition(): array
     {
         return [
-            //
-        ];
+            "descripcion"=> fake()->word(), 
+            "json"=> fake()->word(), 
+            "fecha"=> fake()->word(), 
+            "hora"=> fake()->word()
+         ];
+
+
     }
 }

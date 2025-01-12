@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('direccion');
             $table->string('telefono');
-            $table->foreignId('user_id')->constrained('users');   
+            $table->boolean('ganaderia');
+            $table->boolean('agricultura');
             $table->timestamps();
         });
     }
@@ -28,4 +29,5 @@ return new class extends Migration
     {
         Schema::dropIfExists('empresas');
     }
+
 };

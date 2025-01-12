@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('bitacoras', function (Blueprint $table) {
-            $table->id();
+            $table->id();   
+            $table->string("usuario_id");
+            $table->string("accion");
+            $table->string("tabla_afectada");
+            $table->string("descripcion");
+            $table->foreignId('empresa_id')->constrained('empresas');  
             $table->timestamps();
         });
     }

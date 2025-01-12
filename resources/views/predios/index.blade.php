@@ -28,12 +28,15 @@
 
                     {{-- // FOR PARA LISTAR Predios --}}
                     <ul class="nav nav-treeview">
+                        @foreach($empresa->predios as $predio)
+
                         <li class="nav-item">
-                            <a href="admin/pages/empresas" class="nav-link">
+                            <a href= "{{ route('empresa.predio.show', [$predio->empresa_id,$predio->id]) }}" class="nav-link">
                                 <i class="fas fa-map-pin nav-icon" style="color: green;"></i> <!-- Icono representativo para "Predio 1" -->
-                                <p>Predio 1</p>
+                                <p>{{$predio->nombre}}</p>
                             </a>
                         </li>
+                        @endforeach
                     </ul>
                 </li>
 
@@ -126,7 +129,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form id="form_predio" action="{{ route('empresa.predios.store', $empresa->id) }}" method="POST" enctype="multipart/form-data">
+                <form id="form_predio" action="{{ route('admin.predios.store', $empresa->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <!-- Nombre del Predio -->
@@ -155,10 +158,10 @@
                 
                         <!-- Archivo KMZ -->
                         <div class="form-group">
-                            <label for="archivo_kmz">Archivo KMZ</label>
+                            <label for="archivo_kmz">Archivo JSON</label>
                             <div class="border p-3 text-center" id="drop-area" style="cursor: pointer; position: relative;">
                                 <p>Arrastra y suelta un archivo o haz clic para seleccionar un archivo</p>
-                         <input type="file" class="form-control-file" id="archivo_kmz" name="archivo_kmz" accept=".kmz" style="display: none;" onchange="handleFileSelect(event)">
+                         <input type="file" class="form-control-file" id="archivo_kmz" name="archivo_kmz" accept=".json" style="display: none;" onchange="handleFileSelect(event)">
                                 <div id="img-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none;">
                                     <img id="preview" src="#" alt="Vista previa" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6;">
                                 </div>
@@ -268,6 +271,6 @@
         setTimeout(function() {
             // Cierra el mensaje después de 5 segundos
             $('.alert').alert('close');
-        }, 5000); // 5000 milisegundos = 5 segundos
+        }, 3000); // 5000 milisegundos = 5 segundos
     </script>
 @stop

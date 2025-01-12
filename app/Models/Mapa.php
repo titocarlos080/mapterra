@@ -11,7 +11,7 @@ class Mapa extends Model
     //
     use HasFactory;
     protected $table = "mapas";
-    protected $fillable = ['path_file','descripcion','tipomapa_id','predio_id'];
+    protected $fillable = ['titulo','path_file','descripcion','fecha','hora','tipomapa_id','predio_id'];
 
 
     public function tipomapa(): BelongsTo

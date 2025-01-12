@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('lotes', function (Blueprint $table) {
             $table->id();
+            $table->string('codigo');
+            $table->string('nombre');
+            $table->double('hectareas');
+            $table->foreignId('predio_id')->constrained('predios');   
             $table->timestamps();
         });
     }

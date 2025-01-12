@@ -13,53 +13,84 @@ class TipoMapaController extends Controller
     public function index()
     {
         //
+        $tipoMapas = TipoMapa::all();
+        return view('empresa.tipomapas',compact('tipoMapas'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+     
     public function store(Request $request)
     {
-        //
+       
+    
+        try {
+             // Validar los datos recibidos
+        $validatedData = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'required|string|max:500',
+            'icon' => 'required|string|max:255',
+        ]);
+            // Crear un nuevo registro en la base de datos
+            TipoMapa::create([
+                'nombre' => $validatedData['nombre'],
+                'descripcion' => $validatedData['descripcion'],
+                'icon' => $validatedData['icon'],
+            ]);
+    
+            // Redirigir con mensaje de éxito
+            return redirect()->back()->with('success', 'Tipo de mapa creado correctamente.');
+        } catch (\Exception $e) {
+            // Manejo de errores
+            return redirect()->back()->with('error', 'Ocurrió un error al crear el tipo de mapa: ' . $e->getMessage());
+        }
     }
+    
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(TipoMapa $tipoMapa)
+    
+    public function update(Request $request)
     {
-        //
+       
+        try {
+             // Validar los datos recibidos
+        $validatedData = $request->validate([
+            'id' => 'required|integer|exists:tipo_mapas,id',
+            'nombre' => 'required|string|max:255',
+            'descripcion' => 'required|string|max:500',
+            'icon' => 'required|string|max:255',
+        ]);
+    
+            // Buscar el registro correspondiente
+            $tipoMapa = TipoMapa::findOrFail($validatedData['id']);
+    
+            // Actualizar los datos
+            $tipoMapa->update([
+                'nombre' => $validatedData['nombre'],
+                'descripcion' => $validatedData['descripcion'],
+                'icon' => $validatedData['icon'],
+            ]);
+    
+            // Redirigir con mensaje de éxito
+            return redirect()->back()->with('success', 'Tipo de mapa actualizado correctamente.');
+        } catch (\Exception $e) {
+            // Manejo de errores
+            return redirect()->back()->with('error', 'Ocurrió un error al actualizar el tipo de mapa: ' . $e->getMessage());
+        }
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(TipoMapa $tipoMapa)
+    
+    public function delete($id)
     {
-        //
+        try {
+            // Buscar el registro correspondiente
+            $tipoMapa = TipoMapa::findOrFail($id);
+    
+            // Eliminar el registro
+            $tipoMapa->delete();
+    
+            // Redirigir con mensaje de éxito
+            return redirect()->back()->with('success', 'Tipo de mapa eliminado correctamente.');
+        } catch (\Exception $e) {
+            // Manejo de errores
+            return redirect()->back()->with('error', 'Ocurrió un error al eliminar el tipo de mapa: ' . $e->getMessage());
+        }
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, TipoMapa $tipoMapa)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(TipoMapa $tipoMapa)
-    {
-        //
-    }
+    
 }

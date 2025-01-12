@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('foto_path')->nullable();
             $table->string('password');
             $table->foreignId('rol_id')->constrained('roles');  // Se asegura de que se hace referencia a 'roles'
+            $table->foreignId('empresa_id')->constrained('empresas');  // Se asegura de que se hace referencia a 'roles'
+
             $table->rememberToken();
             $table->timestamps();
         });
