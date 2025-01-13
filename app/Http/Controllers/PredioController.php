@@ -4,106 +4,94 @@ namespace App\Http\Controllers;
 use App\Models\Mapa;
 use App\Models\SolicitudesDeEstudio;
 use App\Models\TipoMapa;
-use JeroenNoten\LaravelAdminLte\Events\BuildingMenu;
-
 use App\Models\Empresa;
 use App\Models\Predio;
-use Illuminate\Support\Facades\Event; // Use the Event facade
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+
 class PredioController extends Controller
 {
-    /** 
+    /**
      * Display a listing of the resource.
      */
-    public function index( $empresaId)
+    public function index($empresaId)
     {
-         // Obtener la empresa
-        $empresa = Empresa::findOrFail($empresaId);
+        // Verificar si el usuario tiene permiso para ver los predios
+        if (!Auth::user()->rol->permisos->contains('accion', 'ver_lista_predios')) {
+            return back()->with('error', 'No tienes permiso para ver los predios.');
+        }
 
-        // Obtener los predios de la empresa
-        $predios = Predio::where('empresa_id', $empresaId)->paginate(5); // Paginación de 10 predios por página
-
-        return view('empresa.predios', compact('empresa', 'predios'));
+        try {
+            $empresa = Empresa::findOrFail($empresaId);
+            $predios = Predio::where('empresa_id', $empresaId)->paginate(5);
+            return view('empresa.predios', compact('empresa', 'predios'));
+        } catch (\Throwable $th) {
+            BitacoraController::store('Error Consulta de Predios', 'predios', "Error al listar predios: {$th->getMessage()}.");
+            return back()->with('error', 'Error al listar predios: ' . $th->getMessage());
+        }
     }
 
-   
+    /**
+     * Store a newly created resource.
+     */
     public function store(Request $request)
     {
-      
-        // Validación de los datos
+        // Verificar si el usuario tiene permiso para crear un predio
+        if (!Auth::user()->rol->permisos->contains('accion', 'crear_predio')) {
+            return back()->with('error', 'No tienes permiso para crear un predio.');
+        }
+
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'municipio' => 'required|string|max:255',
             'provincia' => 'required|string|max:255',
             'departamento' => 'required|string|max:255',
-            'archivo_kmz' => 'nullable|file|max:10240', // Validación del archivo KMZ
+            'archivo_kmz' => 'nullable|file|max:10240',
         ]);
 
         try {
-            //code...
             $empresa = Empresa::findOrFail($request->empresaId);
-            // Crear un nuevo predio
-
             $predio = new Predio();
             $predio->nombre = $validated['nombre'];
             $predio->municipio = $validated['municipio'];
             $predio->provincia = $validated['provincia'];
             $predio->departamento = $validated['departamento'];
             $predio->empresa_id = $empresa->id;
-            // Manejo del archivo KMZ
+
             if ($request->hasFile('archivo_kmz')) {
                 $archivo = $request->file('archivo_kmz');
-
-                // Normalizar los nombres para evitar problemas con espacios u otros caracteres
-                $nombreEmpresa = Str::slug($empresa->nombre, '_'); // Reemplaza espacios con guiones bajos
-                $nombrePredio = Str::slug($predio->nombre, '_');   // Reemplaza espacios con guiones bajos
-
-                // Generar la ruta de almacenamiento
+                $nombreEmpresa = Str::slug($empresa->nombre, '_');
+                $nombrePredio = Str::slug($predio->nombre, '_');
                 $rutaArchivo = $archivo->storeAs(
-                    "{$nombreEmpresa}/predios", // Carpeta de destino
-                    "{$nombrePredio}." . $archivo->getClientOriginalExtension(),      // Nombre del archivo
+                    "{$nombreEmpresa}/predios",
+                    "{$nombrePredio}." . $archivo->getClientOriginalExtension(),
                     'public'
                 );
-
-                // Guardar la ruta en el modelo del predio
                 $predio->path_kmz = $rutaArchivo;
-                $predio->save();
             }
 
+            $predio->save();
 
+            BitacoraController::store('Creación de predio', 'predios', "Se creó el predio {$predio->nombre} para la empresa {$empresa->nombre}.");
 
-            // Redirigir con un mensaje de éxito
             return back()->with('success', 'Predio creado exitosamente');
         } catch (\Throwable $th) {
-            //throw $th;
+            BitacoraController::store('Error en creación de predio', 'predios', $th->getMessage());
             return back()->with('error', $th->getMessage());
         }
-
-
-
-
     }
 
     /**
-     * Display the specified resource.
+     * Update the specified resource.
      */
-    public function show($empresaId, $id)
-    {
-        // Buscar la empresa y el predio por sus IDs
-        $empresa = Empresa::findOrFail($empresaId);
-        $predio = Predio::findOrFail($id);
-
-        // Retornar la vista pasando las variables necesarias
-        return view('empresa.predios.show', compact('empresa', 'predio'));
-    }
-
-
-
-     
     public function update(Request $request)
     {
-        // Validar los datos de entrada
+        // Verificar si el usuario tiene permiso para actualizar un predio
+        if (!Auth::user()->rol->permisos->contains('accion', 'editar_predio')) {
+            return back()->with('error', 'No tienes permiso para actualizar el predio.');
+        }
+
         $request->validate([
             'empresa_id' => 'required|integer|exists:empresas,id',
             'predio_id' => 'required|integer|exists:predios,id',
@@ -111,256 +99,65 @@ class PredioController extends Controller
             'municipio' => 'required|string|max:255',
             'provincia' => 'required|string|max:255',
             'departamento' => 'required|string|max:255',
-        ], [
-            'nombre.required' => 'El nombre del predio es obligatorio.',
-            'municipio.required' => 'El municipio es obligatorio.',
-            'provincia.required' => 'La provincia es obligatoria.',
-            'departamento.required' => 'El departamento es obligatorio.',
         ]);
-    
+
         try {
-            // Obtener el predio por ID
             $predio = Predio::findOrFail($request->predio_id);
-    
-            // Actualizar los datos del predio
             $predio->nombre = $request->nombre;
             $predio->municipio = $request->municipio;
             $predio->provincia = $request->provincia;
             $predio->departamento = $request->departamento;
             $predio->empresa_id = $request->empresa_id;
-    
-            // Guardar los cambios
             $predio->save();
-    
-            // Redirigir con mensaje de éxito
+
+            BitacoraController::store('Actualización de predio', 'predios', "Se actualizó el predio {$predio->nombre}.");
+
             return back()->with('success', 'Predio actualizado correctamente.');
         } catch (\Exception $e) {
-            // Manejar cualquier excepción y redirigir con un mensaje de error
+            BitacoraController::store('Error en actualización de predio', 'predios', $e->getMessage());
             return back()->with('error', 'Ocurrió un error al actualizar el predio: ' . $e->getMessage());
         }
     }
-    
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified resource.
      */
     public function delete($predioId)
     {
-        // 
-         try {
-            //code...
-            $predio=Predio::findOrFail($predioId);
-
-            $predio->delete();
-    
-    
-            return back()->with('success','Elimininado correctamente'.$th);
-        } catch (\Throwable $th) {
-            //throw $th;
-            return back()->with('error','Error al intertar eliminar'.$th);
-           
+        // Verificar si el usuario tiene permiso para eliminar un predio
+        if (!Auth::user()->rol->permisos->contains('accion', 'eliminar_predio')) {
+            return back()->with('error', 'No tienes permiso para eliminar el predio.');
         }
-    
+
+        try {
+            $predio = Predio::findOrFail($predioId);
+            $predio->delete();
+
+            BitacoraController::store('Eliminación de predio', 'predios', "Se eliminó el predio {$predio->nombre}.");
+
+            return back()->with('success', 'Predio eliminado correctamente.');
+        } catch (\Throwable $th) {
+            BitacoraController::store('Error en eliminación de predio', 'predios', $th->getMessage());
+            return back()->with('error', 'Error al intentar eliminar: ' . $th->getMessage());
+        }
     }
 
-    // funciones para redirigir los predios por tipo de mapas
-    public function cartografia($empresaId, $predioId)
-    {
-        // Fetch the empresa and predio
+
+
+    public function getPredio($empresaId, $predioId)
+    {  
+        if (!Auth::user()->rol->permisos->contains('accion', 'ver_lista_predios')) {
+            return back()->with('error', 'No tienes permiso para ver los predios.');
+        }
+
         $empresa = Empresa::findOrFail($empresaId);
         $predio = Predio::findOrFail($predioId);
-
-        // Fetch the mapas with pagination
         $mapas = Mapa::where('predio_id', $predio->id)
             ->where('tipomapa_id', '1')
-            ->paginate(5);  // You can adjust the number 10 as per your requirement
+            ->paginate(5);
+        $tipomapas = TipoMapa::all();
 
-        // Return the view with the data
-        return view('empresa.predios.agricultura.cartografia.index', data: compact('empresa', 'predio', 'mapas'));
+        return view('clients.predios', compact('empresa', 'predio', 'mapas', 'tipomapas'));
     }
 
-    public function historicos($empresaId, $predioId)
-    {
-        // Fetch the empresa and predio
-        $empresa = Empresa::findOrFail($empresaId);
-        $predio = Predio::findOrFail($predioId);
-
-        // Fetch the mapas with pagination
-        $mapas = Mapa::where('predio_id', $predio->id)
-            ->where('tipomapa_id', '2')
-            ->paginate(5);  // You can adjust the number 10 as per your requirement
-
-        // Return the view with the data
-        return view('empresa.predios.agricultura.historico.index', data: compact('empresa', 'predio', 'mapas'));
-
-    }
-
-    public function monitoreo($empresaId, $predioId)
-    {
-        // Fetch the empresa and predio
-        $empresa = Empresa::findOrFail($empresaId);
-        $predio = Predio::findOrFail($predioId);
-
-        // Fetch the mapas with pagination
-        $mapas = Mapa::where('predio_id', $predio->id)
-            ->where('tipomapa_id', '3')
-            ->paginate(5);  // You can adjust the number 10 as per your requirement
-
-        // Return the view with the data
-        return view('empresa.predios.agricultura.monitoreo.index', data: compact('empresa', 'predio', 'mapas'));
-
-    }
-    public function analisisCultivo($empresaId, $predioId)
-    {
-        $empresa = Empresa::findOrFail($empresaId);
-        $predio = Predio::findOrFail($predioId);
-        // Fetch the mapas with pagination
-        $mapas = Mapa::where('predio_id', $predio->id)
-            ->where('tipomapa_id', '4')
-            ->paginate(5);  // You can adjust the number 10 as per your requirement
-
-        return view('empresa.predios.agricultura.analisis-cultivo.index', compact('empresa', 'predio', 'mapas'));
-    }
-
-    public function solicitudEstudio($empresaId, $predioId)
-    {
-        $empresa = Empresa::findOrFail($empresaId);
-        $predio = Predio::findOrFail($predioId);
-        // Fetch the mapas with pagination
-        $mapas = Mapa::where('predio_id', $predio->id)
-            ->where('tipomapa_id', '6')
-            ->paginate(5);  // You can adjust the number 10 as per your requirement
-
-        return view('empresa.predios.agricultura.solicitud-estudio.index', compact('empresa', 'predio', 'mapas'));
-    }
-
-    public function analisisPredio($empresaId, $predioId)
-    {
-        $empresa = Empresa::findOrFail($empresaId);
-        $predio = Predio::findOrFail($predioId);
-        // Fetch the mapas with pagination
-        $mapas = Mapa::where('predio_id', $predio->id)
-            ->where('tipomapa_id', '7')
-            ->paginate(5);  
-        return view('empresa.predios.agricultura.analisis-predio.index', compact('empresa', 'predio', 'mapas'));
-    }
-
-
-    //PARTE DE ACCESO A CLIENTES A SUS RESPECTIVOS PREDIOS
-
-    public function getPredio($empresaId,$predioId)
-    { 
-
-        $empresa = Empresa::findOrFail($empresaId);
-        $predio = Predio::findOrFail($predioId);
-        $mapas = Mapa::where('predio_id', $predio->id)
-        ->where('tipomapa_id', '1')
-        ->paginate(5); 
-        $tipomapas= TipoMapa::all(); 
-    // Return the view with the data
-    return view('clients.predios', data: compact('empresa', 'predio', 'mapas','tipomapas'));
-    
-}
-
-    public function clienteCartografia($empresaId,$predioId)
-    {
-        $empresa = Empresa::findOrFail($empresaId);
-        $predio = Predio::findOrFail($predioId);
-        $mapas = Mapa::where('predio_id', $predio->id)
-        ->where('tipomapa_id', '1')
-        ->paginate(5);  
-    // Return the view with the data
-    return view('clients.predios.cartografias', data: compact('empresa', 'predio', 'mapas'));
-    }
-
-
-    public function clienteHistorico($empresaId,$predioId)
-    {
-        $empresa = Empresa::findOrFail($empresaId);
-        $predio = Predio::findOrFail($predioId);
-        $mapas = Mapa::where('predio_id', $predio->id)
-        ->where('tipomapa_id', '2')
-        ->paginate(5);  
-    // Return the view with the data
-    return view('clients.predios.historicos', data: compact('empresa', 'predio', 'mapas'));
-    
-
-    }
- 
-   
-    public function clienteMonitoreo($empresaId,$predioId)
-    {
-        $empresa = Empresa::findOrFail($empresaId);
-        $predio = Predio::findOrFail($predioId);
-        $mapas = Mapa::where('predio_id', $predio->id)
-        ->where('tipomapa_id', '3') //cambiar 
-        ->paginate(5);  
-    // Return the view with the data
-    return view('clients.predios.monitoreos', data: compact('empresa', 'predio', 'mapas'));
-    
-
-    }
-
-    public function clienteAnalisisCultivo($empresaId,$predioId)
-    {
-        $empresa = Empresa::findOrFail($empresaId);
-        $predio = Predio::findOrFail($predioId);
-        $mapas = Mapa::where('predio_id', $predio->id)
-        ->where('tipomapa_id', '4')
-        ->paginate(5);  
-    // Return the view with the data
-    return view('clients.predios.analisis-cultivo', data: compact('empresa', 'predio', 'mapas'));
-    
-
-    }
-    public function clienteAnalisisPredio($empresaId,$predioId)
-    {
-        $empresa = Empresa::findOrFail($empresaId);
-        $predio = Predio::findOrFail($predioId);
-        $mapas = Mapa::where('predio_id', $predio->id)
-        ->where('tipomapa_id', '7')
-        ->paginate(5);  
-    // Return the view with the data
-    return view('clients.predios.analisis-predio', data: compact('empresa', 'predio', 'mapas'));
-    }
-
-    public function clienteSolicitudTrabajo($empresaId,$predioId)
-    {
-       
-        $empresa = Empresa::findOrFail($empresaId);
-        $predio = Predio::findOrFail($predioId);
-      
-        return view('clients.predios.solicitud-trabajo', data: compact('empresa', 'predio'));
-
-    }
-    
-    public function clienteSolicitudTrabajoStore(Request $request)
-    {
-        // Verifica los datos recibidos
-        $descripcion = $request->input('descripcion');
-        $json = $request->input('json');
-    
-        
-        // Valida los datos
-        if (!$descripcion || !$json) {
-            return response()->json(['message' => 'Faltan datos'], 400);
-        }
-    
-        try {
-            //code...
-            $solicitud= new SolicitudesDeEstudio();
-            $solicitud->descripcion = $descripcion;
-            $solicitud->json = $json;
-            $solicitud->fecha = now()->toDateString(); // Fecha actual sin hora (YYYY-MM-DD)
-            $solicitud->hora = now()->format('H:i:s'); // Hora actual Hms
-            $solicitud->save();
-            return response()->json(['message'=> 'Datos recibidos correctamente'],200);
-
-        } catch (\Throwable $th) {
-            //throw $th;
-            return response()->json(['message'=>  $th->getMessage()],500);
-        }
-         
-    }
-    
 }

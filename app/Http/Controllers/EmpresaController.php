@@ -4,176 +4,137 @@ namespace App\Http\Controllers;
 
 use App\Models\Empresa;
 use App\Models\User;
+use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-
-
 class EmpresaController extends Controller
 {
-
-
-
-
+    // Mostrar lista de empresas
     public function empresas()
-    {
-        $empresas = Empresa::paginate( 5); // Cambia 10 al número de resultados por página
-        return view("empresa.index", compact('empresas'));
+    {   
+        if (Auth::user()->rol->permisos->contains('accion', 'ver_lista_empresas')) {
+            $empresas = Empresa::paginate(5); 
+            BitacoraController::store("vio la lista de empresas", 'empresas', 'vio la lista de empresas');
+            return view("empresa.index", compact('empresas'));
+        }
+        return back()->with("error", "No tiene permisos para esta opción");
     }
 
-
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Crear una empresa
     public function store(Request $request)
     {            
-       
+        if (Auth::user()->rol->permisos->contains('accion', 'crear_empresa')) {
+            try {
+                DB::beginTransaction();
 
-        try {
-            DB::beginTransaction();
+                // Crear el nuevo registro de empresa
+                $empresa = new Empresa();
+                $empresa->nombre = $request->nombre;
+                $empresa->direccion = $request->direccion;
+                $empresa->telefono = $request->telefono;
+                $empresa->ganaderia = $request->ganaderia ? 1 : 0;
+                $empresa->agricultura = $request->agricultura ? 1 : 0;
+                $empresa->save();
 
-            // Crear el nuevo registro de empresa
-            $empresa = new Empresa();
-            $empresa->nombre = $request->nombre;
-            $empresa->direccion = $request->direccion;
-            $empresa->telefono = $request->telefono;
-            $empresa->ganaderia= $request->ganaderia?1:0;
-            $empresa->agricultura= $request->agricultura?1:0;
-            $empresa->save();
+                // Crear el nuevo usuario
+                $user = new User();
+                $user->name = $request->nombre;
+                $user->email = $request->email;
+                $user->password = bcrypt($request->password);
+                $user->rol_id = 2;
+                $user->empresa_id = $empresa->id;
+                $user->save();
 
-            // Crear el nuevo usuario
-            $user = new User();
-            $user->name = $request->nombre;
-            $user->email = $request->email;
-            $user->password = bcrypt($request->password); // Encriptar la contraseña
-            $user->rol_id = 2; // Asignar el rol adecuado
-            $user->empresa_id = $empresa->id; // Asignar el rol adecuado
-            $user->save();
-  
-            // Verificar si se ha subido una imagen
                 if ($request->hasFile('foto')) {
                     $foto = $request->file('foto');
-
-                    // Normalizar el nombre del usuario para evitar problemas con caracteres
                     $nombreUsuario = Str::slug($user->name, '_');
-
-                    // Generar la ruta de almacenamiento
                     $fotoPath = $foto->storeAs(
-                        "fotos/clientes/{$nombreUsuario}/{$user->id}", // Carpeta de destino
-                        "perfil_{$user->id}." . $foto->getClientOriginalExtension(), // Nombre del archivo con su extensión original
-                        'public' // Disco de almacenamiento
+                        "fotos/clientes/{$nombreUsuario}/{$user->id}",
+                        "perfil_{$user->id}." . $foto->getClientOriginalExtension(),
+                        'public'
                     );
-
-                    // Guardar la ruta relativa en la base de datos
                     $user->foto_path = $fotoPath;
-                    $user->save(); // Guardar el registro con la nueva ruta
+                    $user->save();
                 }
 
-                DB::commit(); // Confirmar la transacción
-
-
-            return  back()->with('success', 'La empresa se ha creado exitosamente.');
-        } catch (\Throwable $th) {
-                     DB::rollBack(); // Revertir la transacción en caso de error
-
-            // Manejo de excepciones en caso de error
-             return back()->with('error' , 'Hubo un error al guardar los datos'.$th);
+                DB::commit();
+                BitacoraController::store("creo una empresa", 'empresas', 'usuario creo una empresa');
+                return back()->with('success', 'La empresa se ha creado exitosamente.');
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                BitacoraController::store("Error al crear una empresa", 'empresas', 'usuario fallo al intentar crear una empresa');
+                return back()->with('error', 'Hubo un error al guardar los datos: ' . $th);
+            }
         }
-
-
-        //
+        return back()->with("error", "No tiene permisos para crear una empresa");
     }
 
-    
-
-    /**
-     * Update the specified resource in storage.
-     */
+    // Actualizar una empresa
     public function update(Request $request)
-{
-    // Validación de los datos recibidos
-    $request->validate([
-        'nombre' => 'required|string|max:255',
-        'direccion' => 'required|string|max:255',
-        'telefono' => 'required|string|max:20',
-        'ganaderia' => 'nullable|boolean',
-        'agricultura' => 'nullable|boolean',
-    ], [
-        'nombre.required' => 'El nombre de la empresa es obligatorio.',
-        'telefono.required' => 'El teléfono es obligatorio.',
-    ]);
-
-    try {
-        // Buscar la empresa por su ID
-        $empresa = Empresa::findOrFail($request->id);
-
-        // Actualizar solo los campos que no están vacíos
-        if ($request->has('nombre')) {
-            $empresa->nombre = $request->nombre;
+    {
+        if (!Auth::user()->rol->permisos->contains('accion', 'editar_empresa')) {
+            // Validación de los datos
+            return back()->with("error", "No tiene permisos para actualizar la empresa");
         }
-        if ($request->has('direccion')) {
-            $empresa->direccion = $request->direccion;
-        }
-        if ($request->has('telefono')) {
-            $empresa->telefono = $request->telefono;
-        }
-        if ($request->has('ganaderia')) {
-            $empresa->ganaderia = $request->ganaderia ? 1 : 0;
-        }
-        if ($request->has('agricultura')) {
-            $empresa->agricultura = $request->agricultura ? 1 : 0;
-        }
+            $request->validate([
+                'nombre' => 'required|string|max:255',
+                'direccion' => 'required|string|max:255',
+                'telefono' => 'required|string|max:20',
+                'ganaderia' => 'nullable|boolean',
+                'agricultura' => 'nullable|boolean',
+            ]);
 
-        // Guardar los cambios en la base de datos
-        $empresa->save();
+            try {
+                // Buscar la empresa
+                $empresa = Empresa::findOrFail($request->id);
 
-        // Redirigir al usuario con un mensaje de éxito
-        return redirect()->route('admin-empresas')->with('success', 'La empresa fue actualizada correctamente.');
+                // Actualizar los datos
+                if ($request->has('nombre')) {
+                    $empresa->nombre = $request->nombre;
+                }
+                if ($request->has('direccion')) {
+                    $empresa->direccion = $request->direccion;
+                }
+                if ($request->has('telefono')) {
+                    $empresa->telefono = $request->telefono;
+                }
+                if ($request->has('ganaderia')) {
+                    $empresa->ganaderia = $request->ganaderia ? 1 : 0;
+                }
+                if ($request->has('agricultura')) {
+                    $empresa->agricultura = $request->agricultura ? 1 : 0;
+                }
 
-    } catch (\Throwable $th) {
-        // Capturar cualquier error y mostrar mensaje
-        return redirect()->back()->with('error', 'Ocurrió un error al intentar actualizar la empresa.');
+                $empresa->save();
+                BitacoraController::store("actualizo una empresa", 'empresas', 'usuario actualizo una empresa');
+                return redirect()->route('admin-empresas')->with('success', 'La empresa fue actualizada correctamente.');
+            } catch (\Throwable $th) {
+                BitacoraController::store("fallo al actualizar una empresa", 'empresas', 'usuario fallo al actualizar una empresa');
+                return redirect()->back()->with('error', 'Ocurrió un error al intentar actualizar la empresa.');
+            }
+       
     }
-}
 
-    
-
-    /**
-     * Remove the specified resource from storage.
-     */
+    // Eliminar una empresa
     public function delete($id)
-    {  
-        try {
-           
-            // Buscar la empresa por su ID
-            $empresa = Empresa::findOrFail($id);
-    
-            // Eliminar la empresa
-            $empresa->delete();
-    
-            // Redirigir con mensaje de éxito
-            return back()->with('success', 'La empresa fue eliminada correctamente.');
-        } catch (\Throwable $th) {
-            
-            // Capturar cualquier error y mostrar mensaje de error
-            return back()->with('error', 'Ocurrió un error al intentar eliminar la empresa:'.$th);
+    {
+        if (Auth::user()->rol->permisos->contains('accion', 'eliminar_empresa')) {
+            return back()->with("error", "No tiene permisos para eliminar la empresa");
         }
-    }
+            try {
+                // Buscar la empresa
+                $empresa = Empresa::findOrFail($id);
     
+                // Eliminar la empresa
+                $empresa->delete();
+    
+                BitacoraController::store("elimino una empresa", 'empresas', 'usuario elimino una empresa');
+                return back()->with('success', 'La empresa fue eliminada correctamente.');
+            } catch (\Throwable $th) {
+                BitacoraController::store("error al intentar eliminar una empresa", 'empresas', 'usuario fallo al intentar eliminar una empresa');
+                return back()->with('error', 'Ocurrió un error al intentar eliminar la empresa: ' . $th);
+            }
+        }
+      
 }

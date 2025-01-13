@@ -16,21 +16,23 @@ class SolicitudesDeEstudioController extends Controller
     public function index()
     {
         //
+        if (!Auth::user()->rol->permisos->contains('accion', 'ver_lista_solicitudes_estudio')) {
+            // Validación de los datos
+            return back()->with("error", "No tiene permisos para ver lista solicitudes estudio");
+        }
+        
         $trabajos = SolicitudesDeEstudio::where('estado_id','=',1)->get();
         return view("empresa.solicitud-estudio",compact('trabajos'));
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+    
 
     public function clienteSolicitudEstudio()
-    {
+    {    if (!Auth::user()->rol->permisos->contains('accion', 'crear_solicitud_estudio')) {
+        // Validación de los datos
+        return back()->with("error", "No tiene permisos para crear solicitudes estudio");
+    }
          
         $empresa = Auth::user()->empresa;
        
@@ -42,7 +44,10 @@ class SolicitudesDeEstudioController extends Controller
      */
     public function store(Request $request)
     {
-         
+        if (!Auth::user()->rol->permisos->contains('accion', 'crear_solicitud_estudio')) {
+            // Validación de los datos
+            return back()->with("error", "No tiene permisos para ver crear solicitudes estudio");
+        }
         // Verifica los datos recibidos
         $descripcion = $request->input('descripcion');
         $json = $request->input('json');
@@ -77,35 +82,4 @@ class SolicitudesDeEstudioController extends Controller
 
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(SolicitudesDeEstudio $solicitudesDeEstudio)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(SolicitudesDeEstudio $solicitudesDeEstudio)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, SolicitudesDeEstudio $solicitudesDeEstudio)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(SolicitudesDeEstudio $solicitudesDeEstudio)
-    {
-        //
-    }
 }

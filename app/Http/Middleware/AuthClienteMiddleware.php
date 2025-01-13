@@ -16,10 +16,10 @@ class AuthClienteMiddleware
      */
 
     public function handle(Request $request, Closure $next): Response
-    {   //si el rol es cliente  76638194 919479698 62126609
+    {   //si el rol es cliente 
         
          $user = Auth::user();
-         if (!Auth::check()  || !($user->rol_id==2) ) {
+         if (!Auth::check()  && !($user->empresa->nombre!="MapTerra") ) {
 
             return redirect()->route('index');
         }

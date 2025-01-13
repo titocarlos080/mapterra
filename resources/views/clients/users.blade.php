@@ -118,10 +118,10 @@
                 </td>
                  <td>{{ $user->empresa->nombre }}</td>
                 <td>
-                    <a onclick="verEmpresa('{{ $user->id }}', '{{ $user->name }}', '{{ $user->email }}', '{{ $user->empresa_id }}','{{ $user->empresa->nombre}}', '{{ $user->rol->nombre}}',  )" 
+                    {{-- <a onclick="verEmpresa('{{ $user->id }}', '{{ $user->name }}', '{{ $user->email }}', '{{ $user->empresa_id }}','{{ $user->empresa->nombre}}', '{{ $user->rol->nombre}}',  )" 
                         class="btn btn-primary btn-sm" title="Ver">
                          <i class="fas fa-eye"></i>  
-                     </a>  
+                     </a>   --}}
                     <a onclick="openPermisosModal('{{ $user->id }}')" 
                         class="btn btn-warning btn-sm" title="Permisos">
                          <i class="fas fa-lock"></i> 
@@ -240,7 +240,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <button type="submit" class="btn btn-primary">Guardar  </button>
                 </div>
             </div>
         </form>

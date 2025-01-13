@@ -18,7 +18,7 @@ class AuthMiddleware
     { //si el rol es admin 
         $user = Auth::user();
         
-        if (!Auth::check() || !($user->rol_id==1)) {
+        if (!Auth::check() && !($user->empresa->nombre==="MapTerra") ) {
             return redirect()->route('index');
         }
 

@@ -80,8 +80,10 @@ Route::middleware(['auth.mapterra'])->group(function () {
     Route::post('admin/roles/update', [RolController::class, 'update'])->name('admin-roles-update'); // Actualizar rol
     Route::post('admin/roles/delete/{id}', [RolController::class, 'delete'])->name('admin-roles-delete'); // Eliminar rol
 
-    // PERMISOS
+    // PERMISOS  
     Route::get('admin/permisos', [PermisoController::class, 'index'])->name('admin-permisos'); // Listar permisos
+    Route::post('admin/permisos/asignar/{rolId}', [PermisoController::class, 'asignacion'])->name('admin-permisos-asignar'); // Listar permisos
+    Route::post('admin/permisos/desasignar/{rolId}/{permisoId}', [PermisoController::class, 'desAsignacion'])->name('admin-permisos-desasignar'); // Listar permisos
     Route::post('admin/permisos/store', [PermisoController::class, 'store'])->name('admin-permisos-store'); // Guardar permiso
     Route::get('admin/permisos/edit/{id}', [PermisoController::class, 'edit'])->name('admin-permisos-edit'); // Editar permiso
     Route::post('admin/permisos/update', [PermisoController::class, 'update'])->name('admin-permisos-update'); // Actualizar permiso

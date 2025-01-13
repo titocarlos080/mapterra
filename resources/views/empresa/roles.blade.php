@@ -111,7 +111,12 @@
                             data-toggle="tooltip" data-placement="top" title="Editar Rol">
                         <i class="fas fa-edit"></i>  
                     </button>
-                
+                 
+                    <a onclick="openPermisosModal('{{ $role->id }}')" 
+                       class="btn btn-warning btn-sm" title="Permisos">
+                        <i class="fas fa-lock"></i> 
+                    </a>
+    
                     <!-- Botón de Eliminar con icono y tooltip -->
                     <form action="{{ route('admin-roles-delete', $role->id) }}" method="POST" class="d-inline">
                         @csrf
@@ -123,9 +128,78 @@
                         </button>
                     </form>
                 </div>
-                
             </div>
         </div>
+    
+        <!-- Modal para Permisos (con ID único) -->
+        <div class="modal fade" id="permisosModal{{ $role->id }}" tabindex="-1" aria-labelledby="permisosModalLabel{{ $role->id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div id="permisosForm{{ $role->id }}" method="POST" action="">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="permisosModalLabel{{ $role->id }}">Asignar Permisos - {{ $role->nombre }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="permisosSelectAsignados">Permisos Asignados</label>
+                                <div id="permisosSelectAsignados{{ $role->id }}">
+                                    @foreach($role->permisos as $permisoAsignado)
+                                    <div>
+                                        <form class="permisos-form" data-permiso-id="{{ $permisoAsignado->id }}" method="POST" action="{{ route('admin-permisos-desasignar', ['rolId' => $role->id,'permisoId'=>$permisoAsignado->id]) }}">
+                                            @csrf
+                                            <!-- Asegúrate de asignar un id único al input -->
+                                            <input type="checkbox" name="permisos_asignado" value="{{ $permisoAsignado->id }}" checked class="permiso-checkbox asignado-checkbox" id="permiso_{{ $permisoAsignado->id }}">
+                                            <label for="permiso_{{ $permisoAsignado->id }}">{{ $permisoAsignado->accion }}</label>
+                                        </form>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            <script>
+                                  document.querySelectorAll('.asignado-checkbox').forEach(function(checkbox) {
+                                        checkbox.addEventListener('change', function() {
+                                            const permisoId = this.value;  // Obtener el ID del permiso
+                                            const permisoAccion = this.nextElementSibling.textContent.trim();  // Obtener la acción del permiso
+
+                                            // Identificar el formulario relacionado con el checkbox
+                                            const form = this.closest('form');
+
+                                             
+
+                                            // Enviar el formulario automáticamente
+                                            form.submit();
+                                        });
+                                    });
+
+                            </script>
+                            
+                            
+                            
+                        
+                            <div class="form-group">
+                                <label for="permisosSelectNoAsignados">Permisos No Asignados</label>
+                                <div id="permisosSelectNoAsignados{{ $role->id }}">
+                                    @foreach($permisos as $permiso)
+                                        @if(!$role->permisos->contains('id', $permiso->id))
+                                            <div>
+                                                <form class="permisos-form" data-permiso-id="{{ $permiso->id }}" method="POST" action="{{ route('admin-permisos-asignar', ['rolId' => $role->id]) }}">
+                                                    @csrf
+                                                    <input type="checkbox" name="permisos_no_asignado" value="{{ $permiso->id }}" class="permiso-checkbox no-asignado-checkbox">
+                                                    <label>{{ $permiso->accion }}</label>
+                                                </form>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> 
         @endforeach
     </div>
     
@@ -181,10 +255,36 @@
     </div>
 </div>
 
+
+
+
+
 @endsection
 
 @section('scripts')
 <script>
+
+
+
+
+ function openPermisosModal(roleId) {
+        // Mostrar el modal correspondiente con el ID único
+        $('#permisosModal' + roleId).modal('show');
+    }
+
+    
+
+    // Añadir un evento de escucha para los cambios en los checkboxes de "permisos no asignados"
+    document.querySelectorAll('.no-asignado-checkbox').forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            var form = this.closest('form');
+            if (this.checked) { // Si el checkbox se selecciona
+                form.submit(); // Enviar formulario para asignar el permiso
+            }
+        });
+    });
+
+
     function editarRol(id, nombre) {
         document.getElementById('editRolId').value = id;
         document.getElementById('editNombre').value = nombre;

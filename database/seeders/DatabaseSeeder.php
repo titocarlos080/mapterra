@@ -18,12 +18,10 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database.
      */
 
-     public function run(){
-        Permiso::factory()->create(["accion"=>"todos los permisos"]);
-     }
+     
 
 
-    public function sdf(): void
+    public function run1(): void
     {
         // User::factory(10)->create();
        $rol1 = Rol::factory()->create(['nombre' => 'Administrador'] );
@@ -95,6 +93,78 @@ class DatabaseSeeder extends Seeder
         Estado::factory()->create(["nombre"=>"recibido"]);
         Estado::factory()->create(["nombre"=>"realizado"]);
         Estado::factory()->create(["nombre"=>"entregado"]);
- 
+        
+        Permiso::factory()->create(["accion"=>"todos los permisos"]);
+
+    }
+    public function run()
+    {
+        $permisos = [
+            // Permisos para Empresas
+            ['accion' => 'ver_lista_empresas'],
+            ['accion' => 'crear_empresa'],
+            ['accion' => 'editar_empresa'],
+            ['accion' => 'eliminar_empresa'],
+
+            // Permisos para Usuarios
+            ['accion' => 'ver_lista_usuarios'],
+            ['accion' => 'crear_usuario'],
+            ['accion' => 'editar_usuario'],
+            ['accion' => 'eliminar_usuario'],
+
+            // Permisos para Roles
+            ['accion' => 'ver_lista_roles'],
+            ['accion' => 'crear_rol'],
+            ['accion' => 'editar_rol'],
+            ['accion' => 'eliminar_rol'],
+
+            // Permisos para Permisos
+            ['accion' => 'ver_lista_permisos'],
+            ['accion' => 'crear_permiso'],
+            ['accion' => 'editar_permiso'],
+            ['accion' => 'eliminar_permiso'],
+
+            ['accion' => 'asginar_permisos'],
+            ['accion' => 'desasginar_permisos'],
+
+
+            // // Permiso para todos los permisos
+            // ['accion' => 'todos los permisos'],
+
+            // Permisos relacionados con Mapas
+            ['accion' => 'ver_lista_mapas'],
+            ['accion' => 'crear_mapa'],
+            ['accion' => 'editar_mapa'],
+            ['accion' => 'eliminar_mapa'],
+
+            // Permisos para Solicitudes de Estudio
+            ['accion' => 'ver_lista_solicitudes_estudio'],
+            ['accion' => 'crear_solicitud_estudio'],
+            ['accion' => 'editar_solicitud_estudio'],
+            ['accion' => 'eliminar_solicitud_estudio'],
+
+            // Permisos para Bitácora
+            ['accion' => 'ver_lista_bitacoras'],
+            ['accion' => 'crear_bitacora'],
+            ['accion' => 'editar_bitacora'],
+            ['accion' => 'eliminar_bitacora'],
+
+            // Permisos para Lotes
+            ['accion' => 'ver_lista_lotes'],
+            ['accion' => 'crear_lote'],
+            ['accion' => 'editar_lote'],
+            ['accion' => 'eliminar_lote'],
+            ['accion' => 'cargar_lotes_masivamente'],
+
+            // Permisos para Predios
+            ['accion' => 'ver_lista_predios'],
+            ['accion' => 'crear_predio'],
+            ['accion' => 'editar_predio'],
+            ['accion' => 'eliminar_predio'],
+
+           ];
+
+        // Insertar todos los permisos en un solo lote
+        Permiso::insert($permisos);
     }
 }

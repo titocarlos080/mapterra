@@ -14,6 +14,11 @@ class BitacoraController extends Controller
      */
     public function index()
     {
+        if (!Auth::user()->rol->permisos->contains('accion', 'ver_lista_bitacoras')) {
+            // Validación de los datos
+            return back()->with("error", "No tiene permisos para ver los registros de la bitacora");
+        }
+        
         $bitacoras = Bitacora::paginate(10);
         $empresas = Empresa::all();
         return view('empresa.bitacora',compact('bitacoras','empresas'));
@@ -21,13 +26,7 @@ class BitacoraController extends Controller
         
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+   
 
     /**
      * Store a newly created resource in storage.

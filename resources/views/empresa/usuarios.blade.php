@@ -90,8 +90,12 @@
 @endif
 
 <div class="container">
-    <div class="btn btn-warning ml-auto" data-toggle="modal" data-target="#agregarUsuario">
-        <i class="fas fa-plus-circle text-success"></i> Agregar
+    <div class="card-header d-flex justify-content-between">
+        
+        <div class="btn btn-warning ml-auto" data-toggle="modal" data-target="#agregarUsuario">
+            <i class="fas fa-plus-circle text-success"></i> Agregar  Usuario
+        </div>
+        
     </div>
  
     <table class="table table-striped">
@@ -125,11 +129,7 @@
                        class="btn btn-warning btn-sm" title="Editar">
                         <i class="fas fa-edit"></i> 
                     </a>
-                    
-                    <a onclick="openPermisosModal('{{ $user->id }}')" 
-                        class="btn btn-warning btn-sm" title="Permisos">
-                         <i class="fas fa-lock"></i> 
-                     </a>
+                   
                      
                     <form action="{{ route('admin-usuarios-delete', $user->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('¿Estás seguro de eliminar este Usuario?');">
                         @csrf
@@ -150,38 +150,57 @@
         {{ $users->links() }}
     </div>
 </div>
-<!-- Modal para Permisos -->
-<div class="modal fade" id="permisosModal" tabindex="-1" aria-labelledby="permisosModalLabel" aria-hidden="true">
+{{-- Modal para crear usuario --}}
+<div class="modal fade" id="agregarUsuario" tabindex="-1" aria-labelledby="agregarUsuarioModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form id="permisosForm" method="POST" action="">
+        <form id="agregarUsuariosForm" method="POST" action="{{ route('admin-usuarios-store') }}">
             @csrf
-            @method('PUT')
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="permisosModalLabel">Asignar Permisos</h5>
+                    <h5 class="modal-title" id="agregarUsuarioModalLabel">Nuevo Usuario</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="permisosSelect">Permisos</label>
-                        <select class="form-control" id="permisosSelect" name="permisos[]" multiple>
-                            {{-- @foreach($permisos as $permiso)
-                                <option value="{{ $permiso->id }}">{{ $permiso->nombre }}</option>
-                            @endforeach --}}
-                        </select>
+                        <input type="hidden" name="empresaId" id="empresaId" value="1">
+                         <div class="form-check">
+                            <input class="form-check-input" type="radio" name="rolId" id="permisoAdmin" value="2" required>
+                            <label class="form-check-label" for="permisoAdmin">
+                                Administrador
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="rolId" id="permisoTecnico" value="3">
+                            <label class="form-check-label" for="permisoTecnico">
+                                Técnico
+                            </label>
+                        </div>
+                    </div>
+                    
+                    
+                    <div class="form-group">
+                        <label for="nombreUsuario">Nombre</label>
+                        <input type="text" id="nombreUsuario" name="nombre" class="form-control" placeholder="Ingrese el nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="emailUsuario">Correo Electrónico</label>
+                        <input type="email" id="emailUsuario" name="email" class="form-control" placeholder="Ingrese el correo electrónico" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="passwordUsuario">Contraseña</label>
+                        <input type="password" id="passwordUsuario" name="password" class="form-control" placeholder="Ingrese su contraseña" required>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <button type="submit" class="btn btn-primary">Guardar  </button>
                 </div>
             </div>
         </form>
     </div>
 </div>
-
 
 
 <!-- Modal para Ver Usuario -->
@@ -244,22 +263,7 @@
 
 @section('scripts')
     <script>
- function openPermisosModal(userId) {
-        // Establecer la acción del formulario
-        document.getElementById('permisosForm').action = '/usuarios/' + userId + '/permisos';
-        
-        // Limpiar la selección previa de permisos
-        $('#permisosSelect').val([]).trigger('change');
-        
-        // Cargar los permisos asignados al usuario (puedes hacerlo a través de una llamada AJAX)
-        $.get('/usuarios/' + userId + '/permisos', function(data) {
-            $('#permisosSelect').val(data).trigger('change');
-        });
-
-        // Mostrar el modal
-        $('#permisosModal').modal('show');
-    }
-
+  
 
 
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Permiso extends Model
@@ -12,11 +13,12 @@ class Permiso extends Model
 
     protected $table = "permisos"; // Cambiado para que coincida con el nombre de la tabla correcta
 
-    protected $fillable = ["nombre"]; // Columnas que se pueden asignar masivamente
+    protected $fillable = ["accion"]; // Columnas que se pueden asignar masivamente
 
-    public function roles(): HasMany
+    public function roles(): BelongsToMany
     {
-        return $this->hasMany(RolPermiso::class, "permiso_id", "id"); // Relación con RolPermiso
+        return $this->belongsToMany(Rol::class, 'rol_permisos', 'permiso_id', 'rol_id');
     }
+    
 
 }

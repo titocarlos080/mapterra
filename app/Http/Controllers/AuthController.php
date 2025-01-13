@@ -23,26 +23,26 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required|min:3',
         ]);
-
-        // Intentar autenticar al usuario
+         // Intentar autenticar al usuario
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
             BitacoraController::store("inicio session",'users','ha inciado session');
             // Si el login es exitoso, redirige al usuario a la página deseada
             $user = Auth::user();
+            
             $rol = $user->rol_id;
-            if ($rol == 1) {
+            if ( $user->empresa->nombre === "MapTerra") {
 
                 return redirect()->intended('/home');
             }
-            if ($rol == 2) {
+            if (($rol == 2) || ($user->empresa->nombre != "MapTerra")) {
                 return redirect()->intended('/cliente');
             }
         }
 
         // Si las credenciales son incorrectas, redirige con un mensaje de error
-        return redirect()->back()->withErrors(['error' => 'Registros incorrectos.']);
+        return back()->with('error','Registros incorrectos.');
     }
 
 
