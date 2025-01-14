@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
      
 
 
-    public function run1(): void
+    public function run(): void
     {
         // User::factory(10)->create();
        $rol1 = Rol::factory()->create(['nombre' => 'Administrador'] );
@@ -94,11 +94,9 @@ class DatabaseSeeder extends Seeder
         Estado::factory()->create(["nombre"=>"realizado"]);
         Estado::factory()->create(["nombre"=>"entregado"]);
         
-        Permiso::factory()->create(["accion"=>"todos los permisos"]);
+         
 
-    }
-    public function run()
-    {
+    
         $permisos = [
             // Permisos para Empresas
             ['accion' => 'ver_lista_empresas'],
