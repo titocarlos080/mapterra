@@ -29,7 +29,7 @@ class SolicitudesDeEstudioController extends Controller
     
 
     public function clienteSolicitudEstudio()
-    {    if (!Auth::user()->rol->permisos->contains('accion', 'hacer pedido estudio')) {
+    {    if (!Auth::user()->rol->permisos->contains('accion', 'crear_solicitud_estudio')) {
         // Validación de los datos
         return back()->with("error", "No tiene permisos para crear solicitudes estudio");
     }
@@ -44,7 +44,7 @@ class SolicitudesDeEstudioController extends Controller
      */
     public function store(Request $request)
     {
-        if (!Auth::user()->rol->permisos->contains('accion', 'hacer pedido estudio')) {
+        if (!Auth::user()->rol->permisos->contains('accion', 'crear_solicitud_estudio')) {
             // Validación de los datos
             return back()->with("error", "No tiene permisos para ver crear solicitudes estudio");
         }
