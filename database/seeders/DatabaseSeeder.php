@@ -164,5 +164,5 @@ class DatabaseSeeder extends Seeder
 
         // Insertar todos los permisos en un solo lote
         Permiso::insert($permisos);
-    }
+        $rol1->permisos()->attach(Permiso::all());    }
 }
