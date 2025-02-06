@@ -18,9 +18,6 @@
                style="opacity:.8">
           <span class="brand-text font-weight-light"><b>Mapterra</b>GO</span>
       </a>
-  
-  
-   
     <!-- Sidebar Menu -->
     <div class="sidebar">
         <nav class="mt-2">
@@ -46,12 +43,12 @@
                     </ul>
                      
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
+                {{-- <li class="nav-item">
+                    <a href="{{route('cliente-users')}}" class="nav-link">
                         <i class="fas fa-users nav-icon" style="color: green;"></i>
                         <p>Usuarios</p>  
                     </a>
-                </li>
+                </li> --}}
             
                 <li class="nav-item">
                     <a href="{{route('cliente-solicitud-estudio')}}" class="nav-link">
@@ -59,6 +56,7 @@
                         <p>Sol. Estudio</p>  
                     </a>
                 </li>
+                
             </ul>
         </nav>
     </div>
@@ -132,13 +130,9 @@
          
        
       <!-- Contenedor del mapa -->
-      <button class="export-button text-success" style="background: #ffa500" onclick="exportPolygons()">Exportar </button>
+      {{-- <button class="export-button text-success" style="background: #ffa500" onclick="exportPolygons()">Exportar </button> --}}
  
-      <div class="calculation-box">
-          <p>Área total:</p>
-          <div id="calculated-area">0 m²</div>
-          <div id="calculated-hectares">0 ha</div>
-      </div>
+       
       <div id="map"></div>
       <div class="container mt-4">
         <div class="card">
@@ -146,16 +140,22 @@
                 <h5 class="card-title text-success" >Solicitud de Trabajo</h5>
             </div>
             <div class="card-body">
-                <div class="form-group">
-                    <label for="descripcion"><b>Descripción</b></label>
-                    <textarea class="form-control" name="descripcion" id="descripcion" cols="30" rows="10"></textarea>
-                </div>
-                <button class="btn btn-success mt-3" onclick="enviarDatos({{$empresa->id}})">Enviar</button>
+            <form class="form" id="form" action="{{route("cliente-solicitud-estudio-store")}}" method="POST" >
+                @csrf
+                <input type="hidden" name="empresaId" value="{{$empresa->id}}">
+                <input type="hidden" name="json" id="json" >
+                <div class="form-group mb-4">
+                    <label for="descripcion" class="form-label"><b>Descripción</b></label>
+                    <textarea class="form-control" name="descripcion" id="descripcion"
+                        placeholder="Ingrese la descripción..." required></textarea>
+                </div> 
+                <button class="btn btn-success mt-3" type="submit" >Enviar</button>
+            </form>
             </div>
         </div>
     </div>
   </div>
-  
+ 
   <!-- Librerías de Mapbox y Turf.js -->
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.css" rel="stylesheet">
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.8.0/mapbox-gl.js"></script>
@@ -173,12 +173,12 @@
     container: 'map', // ID del contenedor
     style: 'mapbox://styles/mapbox/satellite-v9', // Estilo del mapa
     center: [-63.1800, -17.7845], // Coordenadas iniciales [lng, lat]
-    zoom: 12 // Nivel de zoom inicial
+    zoom: 10 // Nivel de zoom inicial
     });
 
     // Agregar controles de dibujo
     const draw = new MapboxDraw({
-        displayControlsDefault: true,
+        displayControlsDefault: false,
         controls: {
             polygon: true, // Activar dibujo de polígonos
             trash: true    // Activar botón para eliminar
@@ -192,28 +192,9 @@
     map.addControl(new mapboxgl.FullscreenControl());
 
   
-      // Actualizar el área total
-      function updateTotalArea() {
-          const data = draw.getAll(); // Obtener todos los polígonos dibujados
-          const calculatedArea = document.getElementById('calculated-area');
-          const calculatedHectares = document.getElementById('calculated-hectares');
-          let totalArea = 0;
+      
   
-          data.features.forEach((feature) => {
-              totalArea += turf.area(feature); // Calcular el área de cada polígono
-          });
-  
-          const roundedArea = (totalArea > 0) ? totalArea.toFixed(2) : 0; // Área en m²
-          const roundedHectares = (totalArea > 0) ? (totalArea / 10000).toFixed(2) : 0; // Área en ha
-  
-          calculatedArea.textContent = `${roundedArea} m²`;
-          calculatedHectares.textContent = `${roundedHectares} ha`;
-      }
-  
-      // Eventos de dibujo
-      map.on('draw.create', updateTotalArea);
-      map.on('draw.update', updateTotalArea);
-      map.on('draw.delete', updateTotalArea);
+ 
   
       // Función para exportar los polígonos a un archivo JSON
       function exportPolygons() {
@@ -232,46 +213,17 @@
           // Liberar el objeto URL
           URL.revokeObjectURL(url);
       }
+ 
 
-      function enviarDatos(empresaId) {
-       
-    const data = draw.getAll(); // Obtener todos los datos dibujados en el mapa
-    const json = JSON.stringify(data, null, 2); // Convertir a JSON legible
-  
-
-    const descripcion = document.getElementById('descripcion').value;
-
-    if (!descripcion) {
-        alert("Debe agregar una descripción.");
-        return;
-    }
-
-    const jsonData = {
-        descripcion,
-        json,
-        empresaId
-    };
-
-    fetch('/cliente/solicitud-estudio/store', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify(jsonData)
-    })
-        .then(response => response.json())
-        .then(data => {
-          
-            console.log('Respuesta del servidor:', data);
-            alert(data.message || 'Datos enviados correctamente');
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error al enviar los datos. Revisa la consola para más detalles.');
-        });
-}
-
+    const form = document.getElementById('form');
+    form.addEventListener('submit', function (e) {
+     
+        const data = draw.getAll(); // Obtener todos los datos dibujados en el mapa
+        const json = JSON.stringify(data, null, 2); // Convertir a JSON legible
+        document.getElementById('json').value = json; // Asignar al campo oculto
+    });
+    
+ 
       
   </script>
   @stop

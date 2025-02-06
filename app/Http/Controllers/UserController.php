@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Empresa;
+use App\Models\Rol;
 use App\Models\User;
 use Auth;
 use Illuminate\Http\Request;
@@ -21,7 +23,9 @@ class UserController extends Controller
             return back()->with('error', 'No tienes permiso para ver la lista de usuarios.');
         }
         $users = User::paginate(5);
-        return view('empresa.usuarios', compact('users'));
+        $roles = Rol::all();
+        $empresas = Empresa::all();
+        return view('empresa.usuarios', compact('users', 'roles', 'empresas'));
 
 
     }
@@ -80,12 +84,47 @@ class UserController extends Controller
 
             return back()->with('success', 'Usuario agregado correctamente');
         } catch (\Throwable $th) {
-
             DB::rollBack(); // Revertir la transacción en caso de error
             return back()->with('error', 'El usuario no pudo ser agregado' . $th);
         }
     }
 
+    // storeMapa
+    public function storeMapa(Request $request)
+    {
+        try {   
+
+            DB::beginTransaction();      
+            $user= User::findOrFail($request->idAgregar);
+            
+                // Verificar si se ha subido una imagen
+            if ($request->hasFile('geoFile')) {
+                $geoFile = $request->file('geoFile');
+
+                // Normalizar el nombre del usuario
+                $nombreUsuario = Str::slug($user->name, '_');
+
+                // Generar la ruta de almacenamiento
+                $geoFile = $geoFile->storeAs(
+                    "geo/clientes/{$nombreUsuario}/{$user->id}", // Carpeta de destino
+                    "perfil_{$user->id}." . $geoFile->getClientOriginalExtension(), // Nombre del archivo
+                    'public' // Disco de almacenamiento
+                );
+
+                // Guardar la ruta relativa en la base de datos
+                $user->zona_trabajo = $geoFile;
+                $user->update();
+            }
+
+            DB::commit();
+            return back()->with('success', 'Mapa agregado correctamente');
+        } catch (\Throwable $th) {
+
+            DB::rollBack(); // Revertir la transacción en caso de error
+            return back()->with('error', 'El mapa no pudo ser agregado' . $th);
+        }
+
+    }
 
     public function usuariosPorEmpresa()
     {

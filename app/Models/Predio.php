@@ -20,5 +20,10 @@ class Predio extends Model
     public function mapas(): HasMany {
         return $this->hasMany(Mapa::class, "predio_id", "id");  // 'rol_id' es la columna en la tabla users que guarda el ID del rol
     }
-
+    public function lotes(): HasMany {
+        return $this->hasMany(Lote::class, "predio_id", "id");  // 'rol_id' es la columna en la tabla users que guarda el ID del rol
+    }
+    public function solicitudesEstudio(): HasMany {
+        return $this->hasMany(SolicitudesDeEstudio::class, "predio_id", "id");       
+    }
 }

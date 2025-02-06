@@ -11,7 +11,7 @@ class SolicitudesDeEstudio extends Model
     
     use HasFactory;
     protected $table = "solicitudes_de_estudios";
-    protected $fillable = ["descripcion","json","fecha","hora","estado_id","empresa_id",];
+    protected $fillable = ["descripcion","json","fecha","hora","estado_id","empresa_id","predio_id"];
     
     public function estado(): BelongsTo
     {
@@ -20,6 +20,10 @@ class SolicitudesDeEstudio extends Model
     public function empresa(): BelongsTo
     {
         return $this->belongsTo(Empresa::class, 'empresa_id', 'id');
+    }
+    public function predio(): BelongsTo
+    {
+        return $this->belongsTo(Predio::class, 'predio_id', 'id');
     }
 
 }

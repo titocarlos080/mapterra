@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
@@ -18,9 +16,9 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('foto_path')->nullable();
             $table->string('password');
-            $table->foreignId('rol_id')->constrained('roles');  // Se asegura de que se hace referencia a 'roles'
-            $table->foreignId('empresa_id')->constrained('empresas');  // Se asegura de que se hace referencia a 'roles'
-
+            $table->text('zona_trabajo')->nullable();// archivo GEO, visualizacion perfil
+            $table->foreignId('rol_id')->constrained('roles');   
+            $table->foreignId('empresa_id')->constrained('empresas');   
             $table->rememberToken();
             $table->timestamps();
         });
@@ -41,9 +39,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+     
     public function down(): void
     {
         Schema::dropIfExists('users');

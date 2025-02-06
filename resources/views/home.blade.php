@@ -3,7 +3,7 @@
 @section('title', 'Home')
 
 {{-- @section('content-header')
-    <h1>Detalles del Predio</h1>
+<h1>Detalles del Predio</h1>
 @endsection --}}
 
 {{-- MENU DE NAVEGACION DE LADO IZQUIERDO 75019909 --}}
@@ -11,10 +11,8 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="/home" class="brand-link">
-        <img src="{{asset('vendor/adminlte/dist/img/mapterralogo.webp')}}" 
-             alt="Admin Logo" 
-             class="brand-image img-circle elevation-3" 
-             style="opacity:.8">
+        <img src="{{asset('vendor/adminlte/dist/img/mapterralogo.webp')}}" alt="Admin Logo"
+            class="brand-image img-circle elevation-3" style="opacity:.8">
         <span class="brand-text font-weight-light"><b>Mapterra</b>GO</span>
     </a>
 
@@ -22,7 +20,7 @@
     <div class="sidebar">
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                
+
                 <li class="nav-item">
                     <a href="{{route('admin-empresas')}}" class="nav-link">
                         <i class="fas fa-list nav-icon" style="color: #008000;"></i>
@@ -33,40 +31,46 @@
                     <a href="{{route('solicitud-estudio')}}" class="nav-link">
                         <i class="fas fa-file-alt nav-icon" style="color: #008000;"></i>
                         <p>Sol. estudios</p>
-                    </a> 
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{route('admin-usuarios')}}" class="nav-link">
-                       <i class="fas fa-users nav-icon" style="color: #008000;"></i>
-                       <p>Usuarios</p>
+                        <i class="fas fa-users nav-icon" style="color: #008000;"></i>
+                        <p>Usuarios</p>
                     </a>
-                   </li>
-                   <li class="nav-item">
+                </li>
+                <li class="nav-item">
                     <a href="{{route('admin-roles')}}" class="nav-link">
-                       <i class="fas fa-user-shield nav-icon" style="color: #008000;"></i>
-                       <p>Roles</p>
+                        <i class="fas fa-user-shield nav-icon" style="color: #008000;"></i>
+                        <p>Roles</p>
                     </a>
-                   </li>
-                   <li class="nav-item">
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('admin-permisos') }}" class="nav-link">
                         <i class="fas fa-shield-alt nav-icon" style="color: #008000;"></i>
                         <p>Permisos</p>
                     </a>
-                     </li>
-                   
-                   <li class="nav-item">
+                </li>
+
+                <li class="nav-item">
                     <a href="{{route('admin-tiposmapas')}}" class="nav-link">
-                       <i class="fas fa-map" style="color: #008000;"></i>
-                       <p>Tipo Mapas</p>
+                        <i class="fas fa-map" style="color: #008000;"></i>
+                        <p>Tipo Mapas</p>
                     </a>
-                   </li>
-                   <li class="nav-item">
+                </li>
+                <li class="nav-item">
+                    <a href="{{route('empresa-bichero')}}" class="nav-link">
+                        <i class="fas fa-bug" style="color: green;"></i>
+                        <p>Bichero</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('admin-bitacora') }}" class="nav-link">
                         <i class="fas fa-book nav-icon" style="color: #008000;"></i>
                         <p>Bitácora</p>
                     </a>
                 </li>
-                
+
             </ul>
         </nav>
     </div>
@@ -80,20 +84,20 @@
 
 
 @if(session('success'))
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    {{ session('success') }}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
 @endif
 @if(session('error'))
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-    {{ session('error') }}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
 @endif
 <div class="row m-2">
     <!-- Tarjetas con estadísticas -->
@@ -130,11 +134,12 @@
     </div>
 
     <div class="col-xl-4 col-md-6">
-        <div class="card shadow mb-4"> 
+        <div class="card shadow mb-4">
             <div class="card-body rounded" style="background: #148519">
                 <div class="row align-items-center">
                     <div class="col-2">
-                        <i class="fas fa-tasks fa-2x text-primary"></i> <!-- Icono representativo de "Trabajos Solicitados" -->
+                        <i class="fas fa-tasks fa-2x text-primary"></i>
+                        <!-- Icono representativo de "Trabajos Solicitados" -->
                     </div>
                     <div class="col-10">
                         <h5 class="font-weight-bold">Trabajos Solicitados</h5>
@@ -149,7 +154,7 @@
 
 <!-- Gráficos -->
 <div class="row m-2">
-     <div class="col-xl-4 col-lg-6">
+    <div class="col-xl-4 col-lg-6">
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Visitantes por Semana</h6>
@@ -162,7 +167,7 @@
         </div>
     </div>
 
-     <div class="col-xl-4 col-lg-6">
+    <div class="col-xl-4 col-lg-6">
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Visitas por Dispositivo</h6>
@@ -175,7 +180,7 @@
         </div>
     </div>
 
-     <div class="col-xl-4 col-lg-6">
+    <div class="col-xl-4 col-lg-6">
         <div class="card shadow mb-4">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">Ingresos Mensuales</h6>
@@ -192,7 +197,7 @@
 @endsection
 
 @section('scripts')
-    <script>
-        console.log('Vista cargada correctamente');
-    </script>
+<script>
+    console.log('Vista cargada correctamente');
+</script>
 @endsection

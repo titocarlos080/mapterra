@@ -12,9 +12,7 @@ use Illuminate\Support\Str;
 
 class PredioController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+     
     public function index($empresaId)
     {
         // Verificar si el usuario tiene permiso para ver los predios

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('hora');
             $table->foreignId('estado_id')->constrained('estados'); 
             $table->foreignId('empresa_id')->constrained('empresas'); // asociada a cada empresa
+            $table->foreignId('predio_id')->nullable()->constrained('predios'); 
             $table->timestamps();
         });
     }

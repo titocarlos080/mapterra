@@ -57,6 +57,12 @@
                     </a>
                    </li>
                    <li class="nav-item">
+                    <a href="{{route('empresa-bichero')}}" class="nav-link">
+                        <i class="fas fa-bug" style="color: green;"></i>
+                        <p>Bichero</p>
+                    </a>
+                </li>
+                   <li class="nav-item">
                     <a href="{{ route('admin-bitacora') }}" class="nav-link">
                         <i class="fas fa-book nav-icon" style="color: #008000;"></i>
                         <p>Bitácora</p>

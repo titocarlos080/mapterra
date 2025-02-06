@@ -57,6 +57,12 @@
                     </a>
                    </li>
                    <li class="nav-item">
+                    <a href="{{route('empresa-bichero')}}" class="nav-link">
+                        <i class="fas fa-bug" style="color: green;"></i>
+                        <p>Bichero</p>
+                    </a>
+                </li>
+                   <li class="nav-item">
                     <a href="{{ route('admin-bitacora') }}" class="nav-link">
                         <i class="fas fa-book nav-icon" style="color: #008000;"></i>
                         <p>Bitácora</p>
@@ -129,6 +135,10 @@
                        class="btn btn-warning btn-sm" title="Editar">
                         <i class="fas fa-edit"></i> 
                     </a>
+                    <a onclick="openAgregarMapaModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->email }}', '{{ $user->empresa_id }}')" 
+                        class="btn btn-warning btn-sm" title="Editar">
+                         <i class="fas fa-map-marked-alt"></i> 
+                     </a>
                    
                      
                     <form action="{{ route('admin-usuarios-delete', $user->id) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('¿Estás seguro de eliminar este Usuario?');">
@@ -164,19 +174,20 @@
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <input type="hidden" name="empresaId" id="empresaId" value="1">
-                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="rolId" id="permisoAdmin" value="2" required>
-                            <label class="form-check-label" for="permisoAdmin">
-                                Administrador
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="rolId" id="permisoTecnico" value="3">
-                            <label class="form-check-label" for="permisoTecnico">
-                                Técnico
-                            </label>
-                        </div>
+                        <label for="rolId">Seleccione un rol</label>
+                        <select name="rolId" id="rolId" class="form-control" required>
+                            <option value="" disabled selected>Seleccione un rol...</option>
+                            @foreach ($roles as $rol)
+                                <option value="{{ $rol->id }}">{{ $rol->nombre }}</option>
+                            @endforeach
+                        </select>
+                        <label for="empresaId">Seleccione una empresa</label>
+                        <select name="empresaId" id="empresaId" class="form-control" required>
+                            <option value="" disabled selected>Seleccione una empresa...</option>
+                            @foreach ($empresas as $empresa)
+                                <option value="{{ $empresa->id }}">{{ $empresa->nombre }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     
                     
@@ -259,17 +270,41 @@
     </div>
 </div>
 
+ <!-- Modal para Agregar Mapa Usuario -->
+<div class="modal fade" id="agregarMapaUsuarioModal" tabindex="-1" aria-labelledby="agregarMapaUsuarioLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="agregarMapaUsuarioLabel">Agregar Zona de Trabajo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="agregarMapaUsuarioForm" method="POST" action="{{route('admin-usuarios-store-area-trabajo')}}" enctype="multipart/form-data">
+                <div class="modal-body">
+                    @csrf
+                    <input type="hidden" name="idAgregar" id="idAgregar">
+                    <input type="hidden" name="nombreAgregar" id="nombreAgregar">
+                    <input type="hidden" name="emailAgregar" id="emailAgregar">
+                    <input type="hidden" name="empresaIdAgregar" id="empresaIdAgregar">
+                    <input type="file" name="geoFile" accept=".json,.geojson" required>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" class="btn btn-primary" value="Guardar">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @section('scripts')
+
     <script>
-  
-
-
-
-        console.log('Vista cargada correctamente');
-    
-    function verEmpresa(id, nombre, email,empresa_id, empresa,rol) {
+          console.log('Vista cargada correctamente');
+       function verEmpresa(id, nombre, email,empresa_id, empresa,rol) {
         document.getElementById('verNombre').innerText = nombre;
         document.getElementById('verEmail').innerText = email;
         document.getElementById('verEmpresa').innerText = empresa;
@@ -285,5 +320,18 @@
         document.getElementById('editarUsuarioForm').action = '/usuarios/' + id;
         $('#editarUsuarioModal').modal('show');
     }
+    
+    function openAgregarMapaModal(id, nombre, email, empresa) {
+
+        document.getElementById('idAgregar').value = id;
+        document.getElementById('nombreAgregar').value = nombre;
+        document.getElementById('emailAgregar').value = email;
+        document.getElementById('empresaIdAgregar').value = empresa;
+ 
+        // Cambiar la acción del formulario para enviar la solicitud a la ruta correcta
+         $('#agregarMapaUsuarioModal').modal('show');
+    }
+ 
+
 </script>
 @endsection

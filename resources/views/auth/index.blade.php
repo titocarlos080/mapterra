@@ -13,11 +13,11 @@
 
 </head>
 
+                               {{-- url('https://mapterrabo.com/wp-content/uploads/2024/06/c92650f16717eed6cbb1c85f9d6ed5ff-edited.jpg') --}}
 
 <body class="d-flex justify-content-center align-items-center bg-dark" 
       style="height: 100vh; margin: 0; 
-             background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.1)), 
-                               url('https://mapterrabo.com/wp-content/uploads/2024/06/c92650f16717eed6cbb1c85f9d6ed5ff-edited.jpg'); 
+             background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.1)); 
              background-size: cover; 
              background-position: center;">
 
@@ -50,7 +50,7 @@
                 
                 <!-- Contraseña -->
                 <div class="input-group mb-3">
-                    <input type="password" name="password" class="form-control"  required>
+                    <input type="password" name="password" placeholder="password" class="form-control"  required>
                     <div class="input-group-append">
                         <div class="input-group-text">
                             <span class="fas fa-lock text-success"></span>

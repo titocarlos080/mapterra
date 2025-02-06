@@ -62,6 +62,7 @@ class EmpresaController extends Controller
                 BitacoraController::store("creo una empresa", 'empresas', 'usuario creo una empresa');
                 return back()->with('success', 'La empresa se ha creado exitosamente.');
             } catch (\Throwable $th) {
+ 
                 DB::rollBack();
                 BitacoraController::store("Error al crear una empresa", 'empresas', 'usuario fallo al intentar crear una empresa');
                 return back()->with('error', 'Hubo un error al guardar los datos: ' . $th);

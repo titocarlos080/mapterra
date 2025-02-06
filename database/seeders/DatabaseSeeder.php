@@ -44,48 +44,37 @@ class DatabaseSeeder extends Seeder
         ]);
       
 
- 
+        $historial = TipoMapa::factory()->create([
+            "nombre" => "historial",
+            "descripcion" => "es una mapa historial",
+            "icon" => "fas fa-history"
+        ]);
+
         $cartografica = TipoMapa::factory()->create([
             "nombre" => "cartografica",
             "descripcion" => "es una mapa cartografica",
             "icon" => "fas fa-map"
         ]);
-        
-        $historial = TipoMapa::factory()->create([
-            "nombre" => "historial",
-            "descripcion" => "es una mapa historial",
-            "icon" => "fas fa-history"
+        $analisisPredio = TipoMapa::factory()->create([
+            "nombre" => "Analisis Predio",
+            "descripcion" => "es una mapa analisisPredio",
+            "icon" => "fas fa-chart-pie"
+        ]);
+        $estudioCultivo = TipoMapa::factory()->create([
+            "nombre" => "Analisis Cultivo",
+            "descripcion" => "es una mapa estudioCultivo",
+            "icon" => "fas fa-seedling"
         ]);
         
         $monitoreo = TipoMapa::factory()->create([
             "nombre" => "monitoreo",
             "descripcion" => "es una mapa monitoreo",
             "icon" => "fas fa-eye"
-        ]);
+        ]); 
         
-        $estudioCultivo = TipoMapa::factory()->create([
-            "nombre" => "estudio Cultivo",
-            "descripcion" => "es una mapa estudioCultivo",
-            "icon" => "fas fa-seedling"
-        ]);
         
-        $bichero = TipoMapa::factory()->create([
-            "nombre" => "bichero",
-            "descripcion" => "es una mapa bichero",
-            "icon" => "fas fa-bug"
-        ]);
         
-        $solicitudEstudio = TipoMapa::factory()->create([
-            "nombre" => "solicitud Estudio",
-            "descripcion" => "es una mapa solicitudEstudio",
-            "icon" => "fas fa-clipboard-check"
-        ]);
         
-        $analisisPredio = TipoMapa::factory()->create([
-            "nombre" => "analisis Predio",
-            "descripcion" => "es una mapa analisisPredio",
-            "icon" => "fas fa-chart-pie"
-        ]);
         
         
         //estados
@@ -164,5 +153,7 @@ class DatabaseSeeder extends Seeder
 
         // Insertar todos los permisos en un solo lote
         Permiso::insert($permisos);
-        $rol1->permisos()->attach(Permiso::all());    }
+        $rol1->permisos()->attach(Permiso::all());   
+    
+    }
 }

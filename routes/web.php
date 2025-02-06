@@ -44,7 +44,7 @@ Route::middleware(['auth.cliente'])->group(function () {
    
     //MAPAS
     Route::get('/cliente/mapas/{TipoMapaId}/{empresaId}/{predioId}', [MapaController::class, 'getMapas'])->name('cliente-mapas');
-   
+    
     // USUARIOS
     Route::get('/cliente/users', [UserController::class, 'usuariosPorEmpresa'])->name('cliente-users');
     Route::post('cliente/users/store', [UserController::class, 'store'])->name('cliente-usuarios-store'); // Guardar usuario
@@ -56,8 +56,16 @@ Route::middleware(['auth.cliente'])->group(function () {
 
     // SOLICITUD DE ESTUDIO
     Route::get('/cliente/solicitud-estudio', [SolicitudesDeEstudioController::class, 'clienteSolicitudEstudio'])->name('cliente-solicitud-estudio');
-    Route::post('/cliente/solicitud-estudio/store', [SolicitudesDeEstudioController::class, 'store'])->name('cliente-solicitud-estudio-store');
+    Route::get('/cliente/solicitud-estudio-predio/{TipoMapaId}/{empresaId}/{predioId}', [SolicitudesDeEstudioController::class, 'clienteSolicitudEstudioPredio'])->name('cliente-solicitud-estudio-predio');
 
+    Route::post('/cliente/solicitud-estudio/store', [SolicitudesDeEstudioController::class, 'store'])->name('cliente-solicitud-estudio-store');
+    // SOLICITUD DE ESTUDIO
+
+    Route::get('/cliente/bichero/{TipoMapaId}/{empresaId}/{predioId}', [BicheroController::class, 'index'])->name('cliente-bichero');
+
+    Route::get('/cliente/bicheros/lista/{TipoMapaId}/{empresaId}/{predioId}', [BicheroController::class, 'listaBichero'])->name('cliente-bichero-lista');
+
+    Route::post('/cliente/bichero/store', [BicheroController::class, 'store'])->name('cliente-bichero-store');
 
 });
 
@@ -69,6 +77,7 @@ Route::middleware(['auth.mapterra'])->group(function () {
 
     Route::get('admin/users', [UserController::class, 'index'])->name('admin-usuarios'); // Listar usuarios
     Route::post('admin/users/store', [UserController::class, 'store'])->name('admin-usuarios-store'); // Guardar usuario
+    Route::post('admin/users/store/area/trabajo', [UserController::class, 'storeMapa'])->name('admin-usuarios-store-area-trabajo'); // Guardar usuario
     Route::get('admin/users/edit/{id}', [UserController::class, 'edit'])->name('admin-usuarios-edit'); // Editar usuario
     Route::post('admin/users/update', [UserController::class, 'update'])->name('admin-usuarios-update'); // Actualizar usuario
     Route::post('admin/users/delete/{id}', [UserController::class, 'delete'])->name('admin-usuarios-delete'); // Eliminar usuario
@@ -143,7 +152,7 @@ Route::middleware(['auth.mapterra'])->group(function () {
     Route::post('admin/tipobicheros/delete/{id}', [TipoBicheroController::class, 'delete'])->name('empresa-tipobicheros-delete'); // Eliminar tipo de bichero
 
     // BICHERO
-    Route::get('admin/bichero', [BicheroController::class, 'index'])->name('empresa-bichero'); // Listar bichero
+    Route::get('admin/bichero', [BicheroController::class, 'lista'])->name('empresa-bichero'); // Listar bichero
     Route::post('admin/bichero/store', [BicheroController::class, 'store'])->name('empresa-bichero-store'); // Guardar bichero
     Route::get('admin/bichero/edit/{id}', [BicheroController::class, 'edit'])->name('empresa-bichero-edit'); // Editar bichero
     Route::post('admin/bichero/update', [BicheroController::class, 'update'])->name('empresa-bichero-update'); // Actualizar bichero

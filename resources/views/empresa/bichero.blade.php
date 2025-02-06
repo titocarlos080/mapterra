@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Solicitudes')
+@section('title', 'Bicheros')
 
 
 
@@ -82,24 +82,36 @@
     <div class="col">
         <div class="row">
             {{-- Itera sobre cada trabajo y crea una tarjeta --}}
-            @foreach($trabajos as $trabajo)
+            @foreach($bicheros as $bichero)
                 <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $trabajo->descripcion }}</h5>
+                    <div class="card shadow-sm @if($bichero->tipo_bichero_id == 1) bg-danger @else bg-info @endif">
+                        <div class="card-body text-white">
+                            <h5 class="card-title">
+                                <i
+                                    class="fas @if($bichero->tipo_bichero_id == 1) fa-bug @else fa-exclamation-triangle @endif"></i>
+                                {{ $bichero->descripcion }}
+                            </h5>
                             <p class="card-text">
-                                <strong>Fecha:</strong> {{ $trabajo->fecha }} <br>
-                                <strong>Hora:</strong> {{ $trabajo->hora }} <br>
-                                <strong>Estado:</strong> {{ $trabajo->estado->nombre }} <br>
-                                <strong>Empresa:</strong> {{ $trabajo->empresa->nombre }} <br>
+                                <strong>Solución:</strong> {{ $bichero->solucion }}<br>
+                                <strong>Tipo:</strong> {{ $bichero->tipo_bichero_id == 1 ? 'Plaga' : 'Anomalías' }}<br>
+                                <strong>Latitud:</strong> {{ $bichero->latitud }}<br>
+                                <strong>Longitud:</strong> {{ $bichero->longitud }}<br>
                             </p>
-                            <button class="btn btn-success"
-                                onclick="descargarGeoJSON({{ $trabajo->json }}, 'trabajo_{{ $trabajo->id }}')">Descargar
-                                GeoJSON</button>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="https://www.google.com/maps?q={{ $bichero->latitud }},{{ $bichero->longitud }}"
+                                    target="_blank" class="btn btn-light btn-sm">
+                                    <i class="fas fa-map-marker-alt"></i> Ver en mapa
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             @endforeach
+
+
+        </div>
+        <div class="d-flex justify-content-center ">
+            {{ $bicheros->onEachSide(5)->links() }}
         </div>
     </div>
 </div>

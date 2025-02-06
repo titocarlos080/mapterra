@@ -64,7 +64,7 @@ class LoteController extends Controller
 
     public function cargaMasiva(Request $request)
     {
-        if (!Auth::user()->rol->permisos->contains('accion', 'cargar_lotes_masivamente')) {
+        if (!Auth::user()->rol->permisos->contains('accion', 'crear_lote')) {
             // Validación de los datos
             return back()->with("error", "No tiene permisos para crear lote");
         }

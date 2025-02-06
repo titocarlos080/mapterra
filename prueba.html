@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geolocalización</title>
+</head>
+<body>
+    <h1>Obtener Ubicación Actual</h1>
+    <button id="getLocationBtn">Obtener Ubicación</button>
+    <p id="status"></p>
+    <p>Latitud: <span id="latitude"></span></p>
+    <p>Longitud: <span id="longitude"></span></p>
+
+    <script>
+        // Selección de elementos del DOM
+        const getLocationBtn = document.getElementById('getLocationBtn');
+        const status = document.getElementById('status');
+        const latitude = document.getElementById('latitude');
+        const longitude = document.getElementById('longitude');
+
+        // Función para obtener la ubicación
+        getLocationBtn.addEventListener('click', () => {
+            if (navigator.geolocation) {
+                status.textContent = 'Obteniendo ubicación...';
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        // Éxito
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+
+                        latitude.textContent = lat;
+                        longitude.textContent = lon;
+                        status.textContent = '¡Ubicación obtenida con éxito!';
+                    },
+                    (error) => {
+                        // Error
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                status.textContent = 'Permiso denegado.';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                status.textContent = 'Ubicación no disponible.';
+                                break;
+                            case error.TIMEOUT:
+                                status.textContent = 'La solicitud de ubicación ha caducado.';
+                                break;
+                            default:
+                                status.textContent = 'Error desconocido.';
+                                break;
+                        }
+                    }
+                );
+            } else {
+                status.textContent = 'La geolocalización no está soportada en este navegador.';
+            }
+        });
+    </script>
+</body>
+</html>

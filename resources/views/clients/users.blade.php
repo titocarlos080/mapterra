@@ -47,7 +47,7 @@
                      
                 </li>
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
+                    <a href="{{route('cliente-users')}}" class="nav-link">
                         <i class="fas fa-users nav-icon" style="color: green;"></i>
                         <p>Usuarios</p>  
                     </a>
@@ -57,6 +57,12 @@
                     <a href="{{route('cliente-solicitud-estudio')}}" class="nav-link">
                         <i class="fas fa-clipboard-check" style="color: green;"></i>
                         <p>Sol. Estudio</p>  
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{route('cliente-bichero')}}" class="nav-link">
+                        <i class="fas fa-bug" style="color: green;"></i>
+                        <p>Bichero</p>  
                     </a>
                 </li>
             </ul>

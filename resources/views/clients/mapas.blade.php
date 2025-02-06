@@ -24,57 +24,23 @@
     <div class="sidebar">
         <nav class="mt-2">
             <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+               
+                @foreach($tipomapas as $tipomapa)
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-tractor" style="color: green;"></i>
-                        <p>
-                            AGRICULTURA
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
+                    <a href="{{ route('cliente-mapas', [$tipomapa->id, $empresa->id, $predio->id]) }}"
+                        class="nav-link">
+                        <i class="{{ $tipomapa->icon }}" style="color: green;"></i>
+                        <p>{{ $tipomapa->nombre }}</p>
                     </a>
-                    <ul class="nav nav-treeview">
-                                          @foreach($tipomapas as $tipomapa)
-                                            <li class="nav-item">
-                                                <a href="{{ route('cliente-mapas',[$tipomapa->id,$empresa->id,$predio->id]) }}" class="nav-link">
-                                                    <i class="{{$tipomapa->icon}}" style="color: green;"></i>
-                                                    <p>{{$tipomapa->nombre}}</p>
-                                                </a>
-                                            </li>
-                                            @endforeach                  
-                    </ul>
                 </li>
-    
-               <!-- GANADERIA Section -->
-                @php
-                $ganaderia = Auth::user()->empresa->ganaderia; 
-                
-                @endphp
-                 @if ($ganaderia)
+                @endforeach
                 <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-horse-head" style="color: yellow;"></i>
-                        <p>
-                            GANADERIA
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
+                    <a href="{{route('cliente-bichero',[$tipomapa->id, $empresa->id, $predio->id])}}" class="nav-link">
+                        <i class="fas fa-bug" style="color: green;"></i>
+                        <p>Bichero</p>  
                     </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="fas fa-tree nav-icon" style="color: green;"></i>
-                                <p>Potreros</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="fas fa-paw nav-icon" style="color: orange;"></i>
-                                <p>Hato Ganadero</p>
-                            </a>
-                        </li>
-                    </ul>
                 </li>
-                @endif
-
+                 
             </ul>
         </nav>
     </div>
@@ -87,6 +53,13 @@
 @section('content')
  
 <div class="card">
+
+
+
+
+
+
+
     <div class="card-header d-flex justify-content-between">
         <div>
             <h1 class="card-title">{{$tipoMapa->nombre}} :{{ $predio->nombre }}</h1>
