@@ -55,7 +55,12 @@
                         <p>Bichero</p>
                     </a>
                 </li>
-
+                <li class="nav-item">
+                    <a href="{{route('cliente-seguimiento', [$tipomapa->id, $empresa->id, $predio->id])}}" class="nav-link">
+                        <i class="fas fa-chart-line" style="color: green;"></i>
+                        <p>Seguimiento</p>
+                    </a>
+                </li>
                 <li class="nav-item">
                     <a href="{{route('cliente-solicitud-estudio-predio', [$tipomapa->id, $empresa->id, $predio->id])}}"
                         class="nav-link">

@@ -1,10 +1,7 @@
 @extends('layouts.app')
-
 <!-- Agrega el ícono en la pestaña -->
 <link rel="icon" href="{{ asset('vendor/adminlte/dist/img/mapterralogo.webp') }}" type="image/x-icon">
-
 @section('title', $empresa->nombre . ' - Bichero')
-
 @section('content_header')
 @stop
 @section('sidebar')
@@ -34,13 +31,14 @@
                     </a>
                 </li>
                 
+                {{-- Aumentar otro similar como bicheros --}}
+                
                 <li class="nav-item">
                     <a href="{{route('cliente-seguimiento', [$tipomapa->id, $empresa->id, $predio->id])}}" class="nav-link">
                         <i class="fas fa-chart-line" style="color: green;"></i>
                         <p>Seguimiento</p>
                     </a>
                 </li>
-
 
                 <li class="nav-item">
                     <a href="{{route('cliente-solicitud-estudio-predio', [$tipomapa->id, $empresa->id, $predio->id])}}"
@@ -79,13 +77,13 @@
     <div>
         <a href="{{route('cliente-bichero-lista', [$tipomapa->id, $empresa->id, $predio->id])}}" class="nav-link">
             <i class="fas fa-bug" style="color: green;"></i>
-            <p>Lista de Bicheros</p>
+            <p>Lista de Seguimiento</p>
         </a>
-    </div>
+    </div>    
     <div class="container mt-4">
         <div class="card shadow-lg p-4">
-            <h4 class="text-center mb-4"><b>Formulario de Registro de Bichero</b></h4>
-            <form class="form" id="form" action="/cliente/bichero/store" method="POST" enctype="multipart/form-data">
+            <h4 class="text-center mb-4"><b>Formulario de Registro de Seguimiento</b></h4>
+            <form class="form" id="form" action="/cliente/seguimiento/store" method="POST" enctype="multipart/form-data"> 
                 @csrf
                 <!-- Puntos de Referencia -->
                 <div class="form-group mb-4">
@@ -138,11 +136,11 @@
                         placeholder="Ingrese la descripción..." required></textarea>
                 </div>
 
-                <div class="form-group mb-4">
+                {{-- <div class="form-group mb-4">
                     <label for="solucion" class="form-label"><b>Solución</b></label>
                     <textarea class="form-control" name="solucion" id="solucion" placeholder="Ingrese la solución..."
                         required></textarea>
-                </div>
+                </div> --}}
 
                 <!-- Seleccionar Foto -->
                 <div class="form-group mb-4">

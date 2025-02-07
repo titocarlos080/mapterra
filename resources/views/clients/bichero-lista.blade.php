@@ -39,6 +39,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{route('cliente-seguimiento', [$tipomapa->id, $empresa->id, $predio->id])}}" class="nav-link">
+                        <i class="fas fa-chart-line" style="color: green;"></i>
+                        <p>Seguimiento</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{route('cliente-solicitud-estudio-predio',[$tipomapa->id, $empresa->id, $predio->id])}}" class="nav-link">
                         <i class="fas fa-clipboard-check" style="color: green;"></i>
                         <p>Solicitud Estudio</p>  
@@ -73,39 +79,49 @@
         </button>
     </div>
 @endif
-   <div class="card">
+<div class="row">
+    @foreach($bicheros as $bichero)
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-lg">
+            <div class="card-body">
+                <h5 class="card-title"> {{ $bichero->lote->nombre }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">
+                    {{ $bichero->hora }} -  {{ $bichero->fecha }}
+                    <br>
+                    <a 
+                        href="https://www.google.com/maps?q={{ $bichero->latitud }},{{ $bichero->longitud }}" 
+                        target="_blank" 
+                        class="btn btn-sm btn-link text-primary"
+                    >
+                        Ver en Google Maps
+                    </a>
+                </h6>
+                
+                <p class="card-text"><strong>Solución:</strong> {{ $bichero->solucion }}</p>
 
-    <div class="card-body">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Latitud</th>
-                    <th>Longitud</th>
-                    <th>Descripcion</th>
-                    <th>Solucion</th>
-                    <th>Lote</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($bicheros as $bichero)
-                <tr>
-                    <td>{{ $bichero->latitud }}</td>
-                    <td>{{ $bichero->longitud }}</td>
-                    <td>{{ $bichero->descripcion }}</td>
-                    <td>{{ $bichero->solucion }}</td>
-                    <td>{{ $bichero->lote->nombre }}</td>
-                     
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-            <!-- Pagination Links -->
-    <div class="d-flex justify-content-center ">
-        {{ $bicheros->onEachSide(5)->links() }}
+                @if(count($bichero->imagenes) > 0)
+                <p><strong>Imágenes:</strong></p>
+                <ul class="list-unstyled">
+                    @foreach($bichero->imagenes as $imagen)
+                    <li class="mb-2">
+                        <img src="{{ asset('storage/'.$imagen['archivo']) }}" alt="Imagen de {{ $bichero->lote->nombre }}" class="img-fluid rounded" />
+                    </li>
+                    @endforeach
+                </ul>
+                @else
+                <p class="text-muted">No hay imágenes disponibles.</p>
+                @endif
+            </div>
+        </div>
     </div>
-    </div>
-    
-   </div>
+    @endforeach
+</div>
+
+<!-- Paginación -->
+<div class="d-flex justify-content-center">
+    {{ $bicheros->onEachSide(5)->links() }}
+</div>
+
 
 
 @stop

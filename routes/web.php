@@ -8,6 +8,7 @@ use App\Http\Controllers\MapaController;
 use App\Http\Controllers\PermisoController;
 use App\Http\Controllers\PredioController;
 use App\Http\Controllers\RolController;
+use App\Http\Controllers\SeguimientoController;
 use App\Http\Controllers\SolicitudesDeEstudioController;
 use App\Http\Controllers\TipoBicheroController;
 use App\Http\Controllers\TipoMapaController;
@@ -66,6 +67,11 @@ Route::middleware(['auth.cliente'])->group(function () {
     Route::get('/cliente/bicheros/lista/{TipoMapaId}/{empresaId}/{predioId}', [BicheroController::class, 'listaBichero'])->name('cliente-bichero-lista');
 
     Route::post('/cliente/bichero/store', [BicheroController::class, 'store'])->name('cliente-bichero-store');
+
+
+    Route::get('/cliente/seguimiento/{TipoMapaId}/{empresaId}/{predioId}', [SeguimientoController::class, 'index'])->name('cliente-seguimiento');
+    Route::post('/cliente/seguimiento/store', [SeguimientoController::class, 'store'])->name('cliente-seguimiento-store');
+    
 
 });
 
